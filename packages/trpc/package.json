@@ -12,7 +12,7 @@
   },
 
   "scripts": {
-    "build": "tsup client/index.ts server/index.ts --format cjs --out-dir dist --splitting false",
+    "build": "tsup --entry.client client/index.ts --entry.server server/index.ts --format cjs --out-dir dist",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
