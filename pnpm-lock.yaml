@@ -521,6 +521,12 @@ importers:
 
   packages/logger:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.15.8(@swc/helpers@0.5.15))(jiti@2.6.1)(postcss@8.5.15)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       winston:
         specifier: ^3.19.0
         version: 3.19.0
@@ -531,9 +537,6 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -549,6 +552,9 @@ importers:
       ioredis:
         specifier: ^5.4.2
         version: 5.10.1
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.15.8(@swc/helpers@0.5.15))(jiti@2.6.1)(postcss@8.5.15)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -562,6 +568,9 @@ importers:
       ioredis:
         specifier: ^5.4.2
         version: 5.10.1
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.15.8(@swc/helpers@0.5.15))(jiti@2.6.1)(postcss@8.5.15)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -581,6 +590,9 @@ importers:
       google-auth-library:
         specifier: ^10.5.0
         version: 10.5.0
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.15.8(@swc/helpers@0.5.15))(jiti@2.6.1)(postcss@8.5.15)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       zod:
         specifier: ^4.3.5
         version: 4.3.5
@@ -684,13 +696,16 @@ importers:
 
   packages/validators:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.15.8(@swc/helpers@0.5.15))(jiti@2.6.1)(postcss@8.5.15)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       zod:
         specifier: ^4.3.5
         version: 4.3.5
     devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
