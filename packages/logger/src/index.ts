@@ -1,12 +1,13 @@
 import winston from "winston";
-import { env } from "../env";
 
 type LoggerLevel = "error" | "info" | "debug";
+const nodeEnv = process.env.NODE_ENV ?? "development";
 
 const level: LoggerLevel =
-  env.LOGGER_LEVEL ?? (env.NODE_ENV === "development" ? "debug" : "error");
+  (process.env.LOGGER_LEVEL as LoggerLevel | undefined) ??
+  (nodeEnv === "development" ? "debug" : "error");
 
-const isDevelopment = env.NODE_ENV === "development";
+const isDevelopment = nodeEnv === "development";
 
 const format = isDevelopment
   ? winston.format.combine(

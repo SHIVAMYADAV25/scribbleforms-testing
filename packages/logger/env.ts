@@ -1,19 +1,19 @@
-import { z } from "zod";
+// import { z } from "zod";
 
-const envSchema = z.object({
-  NODE_ENV: z
-    .enum(["development", "production", "test"])
-    .default("development"),
+// const envSchema = z.object({
+//   NODE_ENV: z
+//     .enum(["development", "production", "test"])
+//     .default("development"),
 
-  LOGGER_LEVEL: z
-    .enum(["error", "debug", "info"])
-    .optional(),
-});
+//   LOGGER_LEVEL: z
+//     .enum(["error", "debug", "info"])
+//     .optional(),
+// });
 
-function createEnv(env: NodeJS.ProcessEnv) {
-  const safeParseResult = envSchema.safeParse(env);
-  if (!safeParseResult.success) throw new Error(safeParseResult.error.message);
-  return safeParseResult.data;
-}
+// function createEnv(env: NodeJS.ProcessEnv) {
+//   const safeParseResult = envSchema.safeParse(env);
+//   if (!safeParseResult.success) throw new Error(safeParseResult.error.message);
+//   return safeParseResult.data;
+// }
 
-export const env = createEnv(process.env);
+// export const env = createEnv(process.env);
