@@ -28,7 +28,7 @@
   },
 
   "scripts": {
-    "build": "tsup client/index.ts server/index.ts server/**/*.ts --format cjs --out-dir dist",
+    "build": "tsup",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
