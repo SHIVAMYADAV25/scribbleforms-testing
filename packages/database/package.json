@@ -6,11 +6,10 @@
     "db:generate": "dotenv -- drizzle-kit generate",
     "dev": "dotenv -- drizzle-kit studio",
     "db:seed": "dotenv -- tsx seed/index.ts",
-    "build": "tsup ./index.ts --format cjs --dts"
+    "build": "tsup ./index.ts --format cjs"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
-    "@repo/typescript-config": "workspace:*",
     "@types/pg": "^8.16.0",
     "dotenv-cli": "^11.0.0",
     "tsx": "^4.21.0",
@@ -18,6 +17,7 @@
     "@types/bcryptjs": "^2.4.6"
   },
   "dependencies": {
+    "@repo/typescript-config": "workspace:*",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.1",
     "ioredis": "^5.10.1",
