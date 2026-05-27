@@ -3,7 +3,7 @@
 > Turborepo · Express · tRPC · Drizzle ORM · PostgreSQL · Redis · BullMQ · Zod · Scalar
 
 **Demo credentials:** `demo@scribbleforms.dev` / `Demo@1234`
-**API Docs:** `https://your-deploy.onrender.com/docs`
+**API Docs:** `https://<your-actual-app>.onrender.com/docs`
 **Health:** `https://your-deploy.onrender.com/health`
 
 ---

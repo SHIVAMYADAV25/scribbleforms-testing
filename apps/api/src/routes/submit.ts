@@ -67,6 +67,13 @@ export async function handleFormSubmit(req: Request, res: Response) {
 
   if (form.status !== "published")
     return res.status(403).json({ code: "FORM_NOT_PUBLISHED", message: "This form is not accepting responses" });
+  
+  if (form.hasPassword || form.passwordHash) {
+  return res.status(403).json({
+    code: "PASSWORD_REQUIRED",
+    message: "This form requires a password. Please open the form link to enter it.",
+  });
+}
 
   if (form.expiresAt && new Date(form.expiresAt) < new Date())
     return res.status(410).json({ code: "FORM_EXPIRED", message: "This form has expired" });

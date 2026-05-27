@@ -326,6 +326,7 @@ export class FormRepository {
   toOutput(form: typeof formsTable.$inferSelect) {
     return {
       id:             form.id,
+      userId: form.userId,
       title:          form.title,
       description:    form.description ?? null,
       slug:           form.slug,
