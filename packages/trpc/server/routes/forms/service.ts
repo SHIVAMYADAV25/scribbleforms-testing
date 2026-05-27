@@ -7,7 +7,7 @@ import db from "@repo/database";
 
 import {
   formVersionsTable,
-} from "@repo/database/schema";
+} from "@repo/database";
 
 import { eq } from "drizzle-orm";
 

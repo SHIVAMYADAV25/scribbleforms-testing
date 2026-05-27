@@ -7,7 +7,7 @@ import { FormRepository } from "./repository";
 import {
   createFormInputSchema, updateFormInputSchema,
   formOutputSchema, formListInputSchema, formListOutputSchema,
-  formDetailOutputSchema, publicFormOutputSchema,
+  formDetailOutputSchema,
 } from "./schema";
 import { domainError } from "../../errors";
 import { PLAN_LIMITS } from "@repo/constants";
