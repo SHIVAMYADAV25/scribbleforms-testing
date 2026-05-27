@@ -5,7 +5,7 @@ import {
 } from "drizzle-orm";
 import {
   responsesTable, analyticsDailyTable, analyticsEventsTable, formsTable
-} from "@repo/database/schema";
+} from "@repo/database";
 import type { formStatsInputSchema } from "./schema";
 import type { z } from "zod";
 

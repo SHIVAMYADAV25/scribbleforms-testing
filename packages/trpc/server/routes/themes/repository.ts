@@ -1,7 +1,7 @@
 // packages/trpc/server/routes/themes/repository.ts
 import db from "@repo/database";
 import { eq, and, or, isNull, ilike, sql } from "drizzle-orm";
-import { themesTable, formsTable } from "@repo/database/schema";
+import { themesTable, formsTable } from "@repo/database";
 
 export class ThemeRepository {
   async list(opts: { category?: string; search?: string; includeSystem: boolean; includeUser: boolean; userId?: string }) {

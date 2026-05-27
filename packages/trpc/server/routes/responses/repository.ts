@@ -3,7 +3,7 @@ import db from "@repo/database";
 import { eq, and, desc, gte, lte, count, sql, inArray } from "drizzle-orm";
 import {
   responsesTable, responseAnswersTable, exportJobsTable, formsTable
-} from "@repo/database/schema";
+} from "@repo/database";
 
 export class ResponseRepository {
   async listForForm(opts: {

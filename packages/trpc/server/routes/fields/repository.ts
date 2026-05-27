@@ -1,7 +1,7 @@
 // packages/trpc/server/routes/fields/repository.ts
 import db from "@repo/database";
 import { eq, desc } from "drizzle-orm";
-import { fieldsTable } from "@repo/database/schema";
+import { fieldsTable } from "@repo/database";
 import type { CreateFieldInput } from "./schema";
 
 function toOutput(f: typeof fieldsTable.$inferSelect) {

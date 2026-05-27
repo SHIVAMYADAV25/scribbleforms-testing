@@ -1,7 +1,7 @@
 // packages/trpc/server/routes/webhooks/repository.ts
 import db from "@repo/database";
 import { eq, and } from "drizzle-orm";
-import { webhooksTable, webhookDeliveriesTable } from "@repo/database/schema";
+import { webhooksTable, webhookDeliveriesTable } from "@repo/database";
 import { randomBytes, createHmac } from "node:crypto";
 
 export class WebhookRepository {

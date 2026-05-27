@@ -5,7 +5,7 @@ import db from "@repo/database";
 import {
   responsesTable, responseAnswersTable,
   fieldsTable, exportJobsTable,
-} from "@repo/database/schema";
+} from "@repo/database";
 import { eq, desc, inArray, asc } from "drizzle-orm";
 import { getEmailQueue, safeEnqueue } from "@repo/queues";
 

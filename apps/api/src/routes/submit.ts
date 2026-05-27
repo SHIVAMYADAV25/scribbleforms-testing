@@ -5,7 +5,7 @@ import db from "@repo/database";
 import {
   formsTable, formVersionsTable,
   responsesTable, responseAnswersTable,
-} from "@repo/database/schema";
+} from "@repo/database";
 import { eq, and, isNull, sql } from "drizzle-orm";
 import { submissionEnvelopeSchema } from "@repo/trpc/server/routes/responses/schema";
 import { FIELD_REGISTRY } from "@repo/constants";

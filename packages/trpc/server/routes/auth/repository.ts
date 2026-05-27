@@ -1,7 +1,7 @@
 // packages/trpc/server/routes/auth/repository.ts
 import db from "@repo/database";
 import { eq, and, gt, isNull } from "drizzle-orm";
-import { usersTable, sessionsTable } from "@repo/database/schema";
+import { usersTable, sessionsTable } from "@repo/database";
 
 export class AuthRepository {
   async findUserByEmail(email: string) {

@@ -1,6 +1,6 @@
 // packages/trpc/server/utils/audit.ts
 import db from "@repo/database";
-import { auditLogsTable } from "@repo/database/schema";
+import { auditLogsTable } from "@repo/database";
 
 type AuditAction =
   | "form.create" | "form.update" | "form.publish" | "form.unpublish"

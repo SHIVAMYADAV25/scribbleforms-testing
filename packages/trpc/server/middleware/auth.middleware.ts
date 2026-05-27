@@ -4,7 +4,7 @@ import { middleware, publicProcedure } from "../trpc";
 import { AUTH_COOKIE_NAME } from "../routes/auth/constants";
 import { cacheGet, cacheSet } from "@repo/redis";
 import db from "@repo/database";
-import { sessionsTable, usersTable } from "@repo/database/schema";
+import { sessionsTable, usersTable } from "@repo/database";
 import { eq, and, gt } from "drizzle-orm";
 import type { SessionUser } from "../context";
 

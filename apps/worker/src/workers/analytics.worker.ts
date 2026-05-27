@@ -2,7 +2,7 @@
 import { Worker } from "bullmq";
 import Redis from "ioredis";
 import db from "@repo/database";
-import { analyticsEventsTable, analyticsDailyTable } from "@repo/database/schema";
+import { analyticsEventsTable, analyticsDailyTable } from "@repo/database";
 import { eq, and, sql } from "drizzle-orm";
 
 const connection = new Redis(process.env["REDIS_URL"] ?? "redis://localhost:6379", {

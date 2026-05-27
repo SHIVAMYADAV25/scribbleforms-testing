@@ -1,7 +1,7 @@
 // packages/trpc/server/routes/api-keys/repository.ts
 import db from "@repo/database";
 import { eq, and, isNull } from "drizzle-orm";
-import { apiKeysTable } from "@repo/database/schema";
+import { apiKeysTable } from "@repo/database";
 import { randomBytes, createHash } from "node:crypto";
 
 export class ApiKeyRepository {

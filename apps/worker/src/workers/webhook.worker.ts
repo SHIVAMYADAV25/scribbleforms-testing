@@ -3,7 +3,7 @@ import { Worker } from "bullmq";
 import Redis from "ioredis";
 import { createHmac } from "node:crypto";
 import db from "@repo/database";
-import { webhooksTable, webhookDeliveriesTable } from "@repo/database/schema";
+import { webhooksTable, webhookDeliveriesTable } from "@repo/database";
 import { eq, and, or, isNull, sql } from "drizzle-orm";
 
 const connection = new Redis(process.env["REDIS_URL"] ?? "redis://localhost:6379", {

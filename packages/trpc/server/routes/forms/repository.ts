@@ -5,7 +5,7 @@ import {
 } from "drizzle-orm";
 import {
   formsTable, formVersionsTable, fieldsTable, themesTable
-} from "@repo/database/schema";
+} from "@repo/database";
 import type { CreateFormInput, UpdateFormInput } from "./schema";
 import { randomBytes } from "node:crypto";
 import { hashSync, compareSync } from "bcryptjs";
