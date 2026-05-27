@@ -57,7 +57,11 @@ export default function ResponsesPage({ params }: { params: Promise<{ id: string
   const deleteResponse = useDeleteResponse(formId);
   const { startExport, isExporting, isPending } = useExportCsv(formId);
 
-  const allResponses = data?.pages.flatMap(p => p.responses) ?? [];
+  const allResponses =
+  data?.pages.flatMap(
+    (p: { responses: typeof data.pages[number]["responses"] }) =>
+      p.responses
+  ) ?? [];
   const total = data?.pages[0]?.total ?? 0;
 
   return (
@@ -102,7 +106,7 @@ export default function ResponsesPage({ params }: { params: Promise<{ id: string
             ) : (
               <>
                 <div className="divide-y">
-                  {allResponses.map((r) => (
+                  {allResponses.map((r: (typeof allResponses)[number]) => (
                     <div key={r.id}
                       className={`flex items-center px-4 py-3 cursor-pointer hover:bg-muted/50 transition-colors gap-3 ${selectedId === r.id ? "bg-muted" : ""}`}
                       onClick={() => setSelectedId(r.id === selectedId ? null : r.id)}>

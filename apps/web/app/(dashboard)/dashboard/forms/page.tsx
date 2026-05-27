@@ -21,7 +21,11 @@ export default function FormsPage() {
   const deleteForm   = useDeleteForm();
   const duplicateForm = useDuplicateForm();
 
-  const allForms = data?.pages.flatMap(p => p.forms) ?? [];
+  const allForms =
+  data?.pages.flatMap(
+    (p: { forms: typeof data.pages[number]["forms"] }) =>
+      p.forms
+  ) ?? [];
 
   return (
     <div className="space-y-4">
@@ -56,7 +60,7 @@ export default function FormsPage() {
       ) : (
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {allForms.map(form => (
+            {allForms.map((form: (typeof allForms)[number]) => (
               <Card key={form.id} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between gap-2 mb-3">

@@ -73,7 +73,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="divide-y">
-              {recentForms.map((form) => (
+              {recentForms.map((form: (typeof recentForms)[number]) => (
                 <div key={form.id} className="flex items-center justify-between py-3">
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{form.title}</p>

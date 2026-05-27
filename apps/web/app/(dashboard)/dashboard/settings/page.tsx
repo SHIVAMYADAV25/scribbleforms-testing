@@ -114,7 +114,7 @@ function ApiKeysTab() {
             <p className="text-sm text-muted-foreground text-center py-4">No API keys yet.</p>
           ) : (
             <div className="divide-y">
-              {data.keys.map(key => (
+              {data.keys.map((key: (typeof data.keys)[number]) => (
                 <div key={key.id} className="flex items-center gap-3 py-3">
                   <Key className="h-4 w-4 text-muted-foreground shrink-0" />
                   <div className="flex-1 min-w-0">
@@ -179,7 +179,7 @@ function WebhooksTab() {
             <p className="text-sm text-muted-foreground text-center py-6">No webhooks yet.</p>
           ) : (
             <div className="divide-y">
-              {data.webhooks.map(wh => (
+              {data.webhooks.map((wh: (typeof data.webhooks)[number]) => (
                 <div key={wh.id} className="py-3 space-y-1.5">
                   <div className="flex items-center gap-2">
                     <Webhook className="h-4 w-4 text-muted-foreground shrink-0" />

@@ -1,7 +1,7 @@
 // apps/web/app/(dashboard)/dashboard/forms/[id]/analytics/page.tsx
 "use client";
 import { use, useState } from "react";
-import { useFormStats, useDashboardSummary } from "~/hooks/api/analytics";
+import { useFormStats } from "~/hooks/api/analytics";
 import { useFormDetail } from "~/hooks/api/forms";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Button } from "~/components/ui/button";
@@ -11,6 +11,22 @@ import { Progress } from "~/components/ui/progress";
 import { ArrowLeft, TrendingUp, Users, Eye, Clock } from "lucide-react";
 import Link from "next/link";
 
+type ResponsePoint = {
+  date: string;
+  count: number;
+};
+
+type FunnelStage = {
+  stage: string;
+  count: number;
+};
+
+type FieldAnalytics = {
+  fieldId: string;
+  fieldLabel: string;
+  dropOffRate: number;
+  value?: unknown;
+};
 function toISO(d: Date) { return d.toISOString(); }
 
 export default function AnalyticsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -96,10 +112,10 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
             {isLoading ? <Skeleton className="h-32" /> : (
               stats?.responsesOverTime?.length ? (
                 <div className="space-y-1.5">
-                  {stats.responsesOverTime.slice(-10).map((d) => (
+                  {stats.responsesOverTime.slice(-10).map((d : ResponsePoint) => (
                     <div key={d.date} className="flex items-center gap-2 text-xs">
                       <span className="w-24 text-muted-foreground shrink-0">{d.date}</span>
-                      <Progress value={d.count} max={Math.max(...stats.responsesOverTime.map(x=>x.count), 1)} className="flex-1 h-2" />
+                      <Progress value={d.count} max={Math.max(...stats.responsesOverTime.map((x:ResponsePoint)=>x.count), 1)} className="flex-1 h-2" />
                       <span className="w-6 text-right">{d.count}</span>
                     </div>
                   ))}
@@ -116,7 +132,7 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
             {isLoading ? <Skeleton className="h-32" /> : (
               stats?.completionFunnel?.length ? (
                 <div className="space-y-3">
-                  {stats.completionFunnel.map((stage) => (
+                  {stats.completionFunnel.map((stage : FunnelStage) => (
                     <div key={stage.stage} className="space-y-1">
                       <div className="flex justify-between text-xs">
                         <span className="text-muted-foreground">{stage.stage}</span>
@@ -124,7 +140,7 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
                       </div>
                       <Progress
                         value={stage.count}
-                        max={Math.max(...stats.completionFunnel.map(s => s.count), 1)}
+                        max={Math.max(...stats.completionFunnel.map((s:FunnelStage) => s.count), 1)}
                         className="h-2"
                       />
                     </div>
@@ -147,7 +163,7 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
                     <Progress value={Number(count)}
                       max={Math.max(...Object.values(stats.deviceBreakdown).map(Number), 1)}
                       className="flex-1 h-2" />
-                    <span className="text-xs w-6 text-right">{count}</span>
+                    <span className="text-xs w-6 text-right">{Number(count)}</span>
                   </div>
                 ))}
               </div>
@@ -162,7 +178,7 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
             {isLoading ? <Skeleton className="h-24" /> : (
               stats?.fieldDropOff?.length ? (
                 <div className="space-y-2">
-                  {stats.fieldDropOff.map((f) => (
+                  {stats.fieldDropOff.map((f:FieldAnalytics) => (
                     <div key={f.fieldId} className="flex items-center gap-2 text-xs">
                       <span className="truncate flex-1 text-muted-foreground">{f.fieldLabel}</span>
                       <Badge variant={f.dropOffRate > 30 ? "destructive" : "secondary"} className="text-xs">

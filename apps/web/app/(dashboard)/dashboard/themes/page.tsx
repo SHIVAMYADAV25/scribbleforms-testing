@@ -47,14 +47,27 @@ export default function ThemesPage() {
       toast.success("Theme applied!");
       setApplying(null);
     },
-    onError: (err) => {
+    onError: (err: unknown) => {
       toast.error(getErrorMessage(err));
       setApplying(null);
     },
   });
 
-  const themes = themesData?.themes ?? [];
-  const forms  = formsData?.pages.flatMap(p => p.forms) ?? [];
+  const themes = ((themesData as any)?.themes ?? []) as Array<{
+  id: string;
+  name: string;
+  tokensJson: Record<string, string>;
+  colors: string[];
+  isSystem?: boolean;
+  category?: string;
+  usageCount: number;
+}>;
+  
+const forms =
+  formsData?.pages.flatMap(
+    (p: { forms: typeof formsData.pages[number]["forms"] }) =>
+      p.forms
+  ) ?? [];
 
   function handleApply(themeId: string) {
     if (!formId) { toast.error("Select a form first."); return; }
@@ -80,7 +93,7 @@ export default function ThemesPage() {
             <SelectValue placeholder="Apply to form…" />
           </SelectTrigger>
           <SelectContent>
-            {forms.map(f => (
+            {forms.map((f: (typeof forms)[number]) => (
               <SelectItem key={f.id} value={f.id}>{f.title}</SelectItem>
             ))}
           </SelectContent>

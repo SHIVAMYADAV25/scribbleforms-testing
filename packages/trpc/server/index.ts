@@ -1,4 +1,4 @@
-// packages/trpc/server/index.ts
+import type { AnyRouter } from "@trpc/server";
 import { router } from "./trpc";
 import { authRouter }      from "./routes/auth/route";
 import { formsRouter }     from "./routes/forms/route";
@@ -10,7 +10,7 @@ import { webhooksRouter }  from "./routes/webhooks/route";
 import { apiKeysRouter }   from "./routes/api-keys/route";
 import { healthRouter }    from "./routes/health/route";
 
-export const serverRouter = router({
+const appRouter = router({
   health:    healthRouter,
   auth:      authRouter,
   forms:     formsRouter,
@@ -22,7 +22,9 @@ export const serverRouter = router({
   apiKeys:   apiKeysRouter,
 });
 
-export type ServerRouter = typeof serverRouter;
+export type ServerRouter = typeof appRouter;
+export const serverRouter: AnyRouter = appRouter;
+
 export { createContext } from "./context";
 export type { TRPCContext } from "./context";
 export { AuthRepository } from "./routes/auth/repository";

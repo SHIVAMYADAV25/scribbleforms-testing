@@ -10,7 +10,11 @@ import Link from "next/link";
 
 export default function GlobalResponsesPage() {
   const { data, isLoading } = useFormList();
-  const forms = data?.pages.flatMap(p => p.forms) ?? [];
+  const forms =
+  data?.pages.flatMap(
+    (p: { forms: typeof data.pages[number]["forms"] }) =>
+      p.forms
+  ) ?? [];
 
   return (
     <div className="space-y-4">
@@ -29,7 +33,7 @@ export default function GlobalResponsesPage() {
         </Card>
       ) : (
         <div className="space-y-2">
-          {forms.map(form => (
+          {forms.map((form: (typeof forms)[number]) => (
             <Card key={form.id} className="hover:shadow-sm transition-shadow">
               <CardContent className="flex items-center justify-between py-4 px-4">
                 <div className="min-w-0 flex-1">

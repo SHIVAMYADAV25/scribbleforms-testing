@@ -1,4 +1,9 @@
 {
   "extends": ["@repo/typescript-config/node.json"],
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "declaration": false,
+    "skipLibCheck": true
+  },
   "include": ["server/", "client/"]
 }

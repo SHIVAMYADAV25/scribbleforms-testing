@@ -1,3 +1,2 @@
-import UserService from "@repo/services/user";
-
+import { UserService } from "@repo/services";
 export const userService = new UserService();
