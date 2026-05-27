@@ -17,7 +17,7 @@ export class AuthRepository {
     fullName: string;
     email: string;
     password: string;
-    salt: string | null;
+    salt: string;
   }) {
     const [user] = await db
       .insert(usersTable)
@@ -132,7 +132,7 @@ export class AuthRepository {
     return user ?? null;
   }
 
-  async updatePassword(userId: string, password: string, salt: string | null) {
+  async updatePassword(userId: string, password: string, salt: string) {
     await db.update(usersTable)
       .set({ password, salt, resetToken: null, resetExpiresAt: null })
       .where(eq(usersTable.id, userId));

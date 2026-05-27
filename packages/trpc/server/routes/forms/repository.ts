@@ -300,28 +300,71 @@ export class FormRepository {
     return this.toOutput(newForm!);
   }
 
-  async getPublicExplore(opts: { cursor?: string; limit: number; category?: string }) {
-    const forms = await db
-      .select()
-      .from(formsTable)
-      .where(
-        and(
-          eq(formsTable.status, "published"),
-          eq(formsTable.visibility, "public"),
-          isNull(formsTable.deletedAt)
-        )
-      )
-      .orderBy(desc(formsTable.totalResponses))
-      .limit(opts.limit + 1);
+  async getPublicExplore(opts: {
+  cursor?: string;
+  limit: number;
+  category?: string;
+}) {
+  const conditions: any[] = [
+    eq(formsTable.status, "published"),
+    eq(formsTable.visibility, "public"),
+    isNull(formsTable.deletedAt),
+  ];
 
-    const hasMore = forms.length > opts.limit;
-    const items   = hasMore ? forms.slice(0, opts.limit) : forms;
-
-    return {
-      forms:      items.map((f) => this.toOutput(f)),
-      nextCursor: hasMore ? items[items.length - 1]!.id : null,
-    };
+  // Optional category filter
+  if (opts.category) {
+    conditions.push(
+      eq(themesTable.category, opts.category)
+    );
   }
+
+  // Cursor pagination
+  if (opts.cursor) {
+    const [cursorForm] = await db
+      .select({
+        totalResponses: formsTable.totalResponses,
+      })
+      .from(formsTable)
+      .where(eq(formsTable.id, opts.cursor))
+      .limit(1);
+
+    if (cursorForm) {
+      conditions.push(
+        lt(
+          formsTable.totalResponses,
+          cursorForm.totalResponses
+        )
+      );
+    }
+  }
+
+  const forms = await db
+    .select()
+    .from(formsTable)
+    .leftJoin(
+      themesTable,
+      eq(formsTable.themeId, themesTable.id)
+    )
+    .where(and(...conditions))
+    .orderBy(desc(formsTable.totalResponses))
+    .limit(opts.limit + 1);
+
+  const hasMore = forms.length > opts.limit;
+
+  const items = hasMore
+    ? forms.slice(0, opts.limit)
+    : forms;
+
+  return {
+    forms: items.map((f) =>
+      this.toOutput(f.forms)
+    ),
+
+    nextCursor: hasMore
+      ? items[items.length - 1]!.forms.id
+      : null,
+  };
+}
 
   toOutput(form: typeof formsTable.$inferSelect) {
     return {

@@ -3,6 +3,13 @@ import { FormRepository } from "./repository";
 import type { CreateFormInput, UpdateFormInput } from "./schema";
 import { domainError } from "../../errors";
 import { verifyFormPassword } from "./repository";
+import db from "@repo/database";
+
+import {
+  formVersionsTable,
+} from "@repo/database/schema";
+
+import { eq } from "drizzle-orm";
 
 export class FormService {
   constructor(private repository: FormRepository) {}
@@ -35,9 +42,6 @@ export class FormService {
     // Get fields from current version snapshot
     let fields: unknown[] = [];
     if (form.currentVersionId) {
-      const db = (await import("@repo/database")).default;
-      const { formVersionsTable } = await import("@repo/database/schema");
-      const { eq } = await import("drizzle-orm");
       const [ver] = await db
         .select()
         .from(formVersionsTable)

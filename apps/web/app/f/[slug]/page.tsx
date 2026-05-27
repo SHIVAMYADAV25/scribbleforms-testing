@@ -16,6 +16,7 @@ import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Checkbox } from "~/components/ui/checkbox";
 import { AlertCircle, Lock } from "lucide-react";
 import { getErrorMessage } from "~/lib/errors";
+import { toast } from "sonner";
 
 // ── Individual field renderers ──────────────────────────────────────
 function FieldRenderer({ field, value, onChange, error }: {
@@ -202,6 +203,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
   const [errors, setErrors]       = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [formClosed, setFormClosed] = useState(false);
+  const hasViewed = useRef(false);
   const startTimeRef = useRef(Date.now());
   const hasStarted = useRef(false);
   const hasSubmitted = useRef(false);
@@ -211,7 +213,9 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
 
   // Track form_view once on mount
   useEffect(() => {
-    if (form && !("requiresPassword" in form)) {
+    if (  form &&
+  !("requiresPassword" in form) &&
+  !hasViewed.current) {
       trackEvent.mutate({
         formId: form.id,
         eventType: "form_view",
@@ -319,7 +323,7 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
 
       if (!res.ok) {
         if (data.code === "FORM_VERSION_OUTDATED") {
-          alert("The form was updated. The page will reload.");
+          toast.error(getErrorMessage(data));
           window.location.reload();
           return;
         }
@@ -335,11 +339,6 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
 
       if (!hasSubmitted.current) {
         hasSubmitted.current = true;
-
-        trackEvent.mutate({
-          formId: form.id,
-          eventType: "form_submit",
-        });
       }
 
       if (data.redirectUrl) {

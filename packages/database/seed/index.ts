@@ -1,7 +1,7 @@
 // packages/database/seed/index.ts
 // Demo credentials: demo@scribbleforms.dev / Demo@1234
 import "dotenv/config";
-import { randomBytes } from "node:crypto";
+import { createHmac, randomBytes } from "node:crypto";
 import { hashSync } from "bcryptjs";
 import db from "../index";
 import {
@@ -11,7 +11,9 @@ import {
 } from "../schema";
 import { sql } from "drizzle-orm";
 
-
+function hashPassword(password: string, salt: string) {
+  return createHmac("sha256", salt).update(password).digest("hex");
+}
 
 function slug(s: string) {
   return s.toLowerCase().replace(/[^a-z0-9]/g, "-").replace(/-+/g, "-").slice(0, 60);
@@ -211,14 +213,14 @@ async function seed() {
 
   // 2 — Demo user
   const salt     = randomBytes(16).toString("hex");
-  const password = hashSync("Demo@1234", 10);
+  const password = hashPassword("Demo@1234", salt);
   const [user]   = await db
     .insert(usersTable)
     .values({
       email:         "demo@scribbleforms.dev",
       fullName:      "Demo Creator",
       password,
-      salt:null,
+      salt,
       plan:          "studio",
       emailVerified: true,
     })
