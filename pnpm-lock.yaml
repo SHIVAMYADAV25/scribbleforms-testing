@@ -425,10 +425,14 @@ importers:
         version: 5.9.3
 
   packages/constants:
-    devDependencies:
+    dependencies:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.15.8(@swc/helpers@0.5.15))(jiti@2.6.1)(postcss@8.5.15)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
+    devDependencies:
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -536,6 +540,9 @@ importers:
 
   packages/queues:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       bullmq:
         specifier: ^5.51.1
         version: 5.76.10
@@ -543,22 +550,19 @@ importers:
         specifier: ^5.4.2
         version: 5.10.1
     devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
 
   packages/redis:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       ioredis:
         specifier: ^5.4.2
         version: 5.10.1
     devDependencies:
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -571,6 +575,9 @@ importers:
       '@repo/logger':
         specifier: workspace:*
         version: link:../logger
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       google-auth-library:
         specifier: ^10.5.0
         version: 10.5.0
@@ -581,9 +588,6 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       dotenv-cli:
         specifier: ^11.0.0
         version: 11.0.0

@@ -1,10 +1,17 @@
 {
   "name": "@repo/constants",
   "version": "1.0.0",
+  "main": "./dist/index.js",
+  "scripts": {
+    "build": "tsup ./src/index.ts --format cjs"
+  },
   "private": true,
-  "main": "./src/index.ts",
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "tsup": "^8.5.1"
   }
 }
