@@ -45,6 +45,9 @@ importers:
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
       '@repo/validators':
         specifier: workspace:*
         version: link:../../packages/validators
@@ -136,9 +139,6 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:^
         version: link:../../packages/eslint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
       '@swc/core':
         specifier: ^1.15.8
         version: 1.15.8(@swc/helpers@0.5.15)
@@ -453,6 +453,9 @@ importers:
       pg:
         specifier: ^8.16.3
         version: 8.16.3
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@swc/core@1.15.8(@swc/helpers@0.5.15))(jiti@2.6.1)(postcss@8.5.15)(tsx@4.21.0)(typescript@5.9.3)(yaml@2.8.2)
       zod:
         specifier: ^4.3.5
         version: 4.3.5

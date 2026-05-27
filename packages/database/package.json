@@ -5,7 +5,8 @@
     "db:migrate": "dotenv -- drizzle-kit migrate",
     "db:generate": "dotenv -- drizzle-kit generate",
     "dev": "dotenv -- drizzle-kit studio",
-    "db:seed": "dotenv -- tsx seed/index.ts"
+    "db:seed": "dotenv -- tsx seed/index.ts",
+    "build": "tsup src/index.ts --format cjs --dts"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -23,6 +24,7 @@
     "pg": "^8.16.3",
     "zod": "^4.3.5",
     "bcryptjs": "^3.0.3",
-    "drizzle-kit": "^0.31.8"
+    "drizzle-kit": "^0.31.8",
+    "tsup": "^8.5.1"
   }
 }

@@ -25,6 +25,7 @@
     "vitest": "^4.1.7"
   },
   "dependencies": {
+    "@repo/typescript-config": "workspace:*",
     "@repo/constants": "workspace:*",
     "@repo/database": "workspace:*",
     "@repo/logger": "workspace:*",
