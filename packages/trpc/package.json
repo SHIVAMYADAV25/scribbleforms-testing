@@ -3,17 +3,16 @@
   "version": "1.0.0",
   "private": true,
 
-  "main": "./dist/client/index.js",
-  "types": "./dist/client/index.d.ts",
+  "main": "./dist/client.js",
 
   "exports": {
-    ".": "./dist/client/index.js",
-    "./client": "./dist/client/index.js",
-    "./server": "./dist/server/index.js"
+    ".": "./dist/client.js",
+    "./client": "./dist/client.js",
+    "./server": "./dist/server.js"
   },
 
   "scripts": {
-    "build": "tsup client/index.ts server/index.ts --format cjs",
+    "build": "tsup client/index.ts server/index.ts --format cjs --out-dir dist --splitting false",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
