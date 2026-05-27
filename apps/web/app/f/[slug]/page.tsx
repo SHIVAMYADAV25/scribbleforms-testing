@@ -2,7 +2,7 @@
 "use client";
 import { use, useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { usePublicForm, useFormList } from "~/hooks/api/forms";
+import { usePublicForm } from "~/hooks/api/forms";
 import { useTrackEvent } from "~/hooks/api/analytics";
 import { applyConditions, buildFieldSchema } from "@repo/validators";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "~/components/ui/card";
@@ -11,7 +11,6 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { Progress } from "~/components/ui/progress";
-import { Badge } from "~/components/ui/badge";
 import { Skeleton } from "~/components/ui/skeleton";
 import { RadioGroup, RadioGroupItem } from "~/components/ui/radio-group";
 import { Checkbox } from "~/components/ui/checkbox";
@@ -107,7 +106,7 @@ function FieldRenderer({ field, value, onChange, error }: {
               <div key={opt} className="flex items-center gap-2">
                 <Checkbox id={`${field.id}-${opt}`}
                   checked={selected.includes(opt)}
-                  onCheckedChange={checked => {
+                  onCheckedChange={(checked: boolean | "indeterminate") => {
                     onChange(checked ? [...selected, opt] : selected.filter(s => s !== opt));
                   }} />
                 <Label htmlFor={`${field.id}-${opt}`} className="font-normal cursor-pointer">{opt}</Label>
@@ -123,7 +122,7 @@ function FieldRenderer({ field, value, onChange, error }: {
       return (
         <div className="flex items-start gap-2">
           <Checkbox id={field.id} checked={!!value}
-            onCheckedChange={v => onChange(!!v)} className="mt-0.5" />
+            onCheckedChange={(v: boolean | "indeterminate") => onChange(!!v)} className="mt-0.5" />
           <div>
             <Label htmlFor={field.id} className="font-normal cursor-pointer">
               {field.label}{field.required && <span className="text-destructive ml-0.5">*</span>}
@@ -203,7 +202,9 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
   const [errors, setErrors]       = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
   const [formClosed, setFormClosed] = useState(false);
-  const startTimeRef              = useRef(Date.now());
+  const startTimeRef = useRef(Date.now());
+  const hasStarted = useRef(false);
+  const hasSubmitted = useRef(false);
 
   const trackEvent = useTrackEvent();
   const { data: form, isLoading, error } = usePublicForm(slug);
@@ -211,8 +212,24 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
   // Track form_view once on mount
   useEffect(() => {
     if (form && !("requiresPassword" in form)) {
-      trackEvent.mutate({ formId: form.id, eventType: "form_view" });
+      trackEvent.mutate({
+        formId: form.id,
+        eventType: "form_view",
+      });
     }
+
+    return () => {
+      if (
+        hasStarted.current &&
+        !hasSubmitted.current &&
+        form
+      ) {
+        trackEvent.mutate({
+          formId: form.id,
+          eventType: "form_abandon",
+        });
+      }
+    };
   }, [form?.id]);
 
   if (isLoading) return (
@@ -316,6 +333,15 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
         return;
       }
 
+      if (!hasSubmitted.current) {
+        hasSubmitted.current = true;
+
+        trackEvent.mutate({
+          formId: form.id,
+          eventType: "form_submit",
+        });
+      }
+
       if (data.redirectUrl) {
         window.location.href = data.redirectUrl;
       } else {
@@ -351,7 +377,21 @@ export default function PublicFormPage({ params }: { params: Promise<{ slug: str
                 key={field.id}
                 field={field}
                 value={answers[field.id]}
-                onChange={v => setAnswers(prev => ({ ...prev, [field.id]: v }))}
+                onChange={v => {
+                  if (!hasStarted.current) {
+                    hasStarted.current = true;
+
+                    trackEvent.mutate({
+                      formId: form.id,
+                      eventType: "form_start",
+                    });
+                  }
+
+                  setAnswers(prev => ({
+                    ...prev,
+                    [field.id]: v,
+                  }));
+                }}
                 error={errors[field.id]}
               />
             ))}

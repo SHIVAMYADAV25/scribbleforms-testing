@@ -4,8 +4,7 @@ import {
   date, unique, jsonb, varchar, bigserial, pgEnum
 } from "drizzle-orm/pg-core";
 import { formsTable } from "./forms";
-import { responsesTable } from "./responses";
-import { fieldsTable } from "./fields";
+
 
 export const eventTypeEnum = pgEnum("event_type", [
   "form_view", "form_start", "field_focus", "field_blur",

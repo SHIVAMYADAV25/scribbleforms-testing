@@ -17,15 +17,22 @@ export default function AnalyticsPage({ params }: { params: Promise<{ id: string
   const { id: formId } = use(params);
   const [days, setDays] = useState(30);
 
-  const endDate   = toISO(new Date());
-  const startDate = toISO(new Date(Date.now() - days * 86_400_000));
+  const [dateRange, setDateRange] = useState(() => {
+  const end = new Date();
+  const start = new Date(Date.now() - 30 * 86_400_000);
+
+  return {
+    startDate: start.toISOString(),
+    endDate: end.toISOString(),
+  };
+});
 
   const { data: form }  = useFormDetail(formId);
-  const { data: stats, isLoading } = useFormStats(formId, startDate, endDate);
-
-  console.log(stats)
-  console.log(form)
-  console.log(isLoading)
+  const { data: stats, isLoading } = useFormStats(
+  formId,
+  dateRange.startDate,
+  dateRange.endDate
+);
 
   return (
     <div className="space-y-6">

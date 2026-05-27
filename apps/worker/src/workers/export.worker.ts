@@ -6,7 +6,7 @@ import {
   responsesTable, responseAnswersTable,
   fieldsTable, exportJobsTable,
 } from "@repo/database/schema";
-import { eq, desc, inArray } from "drizzle-orm";
+import { eq, desc, inArray, asc } from "drizzle-orm";
 import { getEmailQueue, safeEnqueue } from "@repo/queues";
 
 const connection = new Redis(process.env["REDIS_URL"] ?? "redis://localhost:6379", {
@@ -14,12 +14,15 @@ const connection = new Redis(process.env["REDIS_URL"] ?? "redis://localhost:6379
   enableReadyCheck:     false,
 });
 
+
+
 async function generateCsv(formId: string): Promise<string> {
+  console.log(process.env.DATABASE_URL)
   const fields = await db
     .select()
     .from(fieldsTable)
     .where(eq(fieldsTable.formId, formId))
-    .orderBy(fieldsTable.order);
+    .orderBy(asc(fieldsTable.order));;
 
   const responses = await db
     .select()
@@ -34,9 +37,9 @@ async function generateCsv(formId: string): Promise<string> {
   ];
   const rows: string[][] = [headers];
 
-  if (responses.length === 0) {
-    return rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n");
-  }
+  // if (responses.length === 0) {
+  //   return rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n");
+  // }
 
   // Batch-load all answers (no N+1)
   const responseIds = responses.map((r) => r.id);
@@ -71,6 +74,8 @@ async function generateCsv(formId: string): Promise<string> {
     rows.push(row);
   }
 
+  console.log(rows)
+
   return rows
     .map((row) => row.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(","))
     .join("\n");
@@ -82,6 +87,7 @@ async function uploadToCloudinary(content: string, filename: string): Promise<st
   const apiSecret  = process.env["CLOUDINARY_API_SECRET"];
 
   if (!cloudName || !apiKey || !apiSecret) return null;
+  console.log(cloudName,apiKey,apiSecret);
 
   try {
     const { v2: cloudinary } = await import("cloudinary");
@@ -98,14 +104,16 @@ async function uploadToCloudinary(content: string, filename: string): Promise<st
       );
       stream.end(buf);
     });
-  } catch {
-    return null;
-  }
+  } catch (err) {
+  console.error("Cloudinary upload failed", err);
+  throw err;
+}
 }
 
 export const exportWorker = new Worker(
   "export",
   async (job) => {
+    console.log(process.env.DATABASE_URL)
     const { exportJobId, formId, userEmail } = job.data as {
       exportJobId: string;
       formId:      string;
@@ -137,6 +145,7 @@ export const exportWorker = new Worker(
         });
       }
     } catch (err) {
+      console.error(`[Export][Failed] job=${job?.id}`, err);
       await db
         .update(exportJobsTable)
         .set({ status: "failed", updatedAt: new Date() })
@@ -148,5 +157,5 @@ export const exportWorker = new Worker(
 );
 
 exportWorker.on("failed", (job, err) => {
-  console.error(`[Export][Failed] job=${job?.id}`, err.message);
+  console.error(`[Export][Failed] job=${job?.id}`, err);
 });

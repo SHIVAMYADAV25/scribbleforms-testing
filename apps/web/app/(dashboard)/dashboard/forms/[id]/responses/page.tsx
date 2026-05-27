@@ -34,7 +34,7 @@ function ResponseDetail({ responseId, formId, onClose }: { responseId: string; f
               {data.answers?.map((a: any) => (
                 <div key={a.id} className="space-y-0.5">
                   <p className="text-xs font-medium text-muted-foreground capitalize">
-                    {a.fieldType.replace(/_/g," ")}
+                    {a.label ?? a.fieldType.replace(/_/g," ")}
                   </p>
                   <p className="text-sm break-words">
                     {a.valueText ?? a.valueNumber ?? JSON.stringify(a.valueArray ?? a.valueJson ?? "—")}
@@ -70,11 +70,20 @@ export default function ResponsesPage({ params }: { params: Promise<{ id: string
           <h2 className="text-xl font-bold">{form?.title ?? "Responses"}</h2>
           <Badge variant="secondary">{total} total</Badge>
         </div>
-        <Button variant="outline" size="sm" onClick={startExport}
-          disabled={isExporting || isPending || allResponses.length === 0}>
-          <Download className="h-4 w-4 mr-2" />
-          {isExporting ? "Exporting…" : "Export CSV"}
-        </Button>
+        <Button
+  variant="outline"
+  size="sm"
+  onClick={startExport}
+  disabled={isExporting || isPending || allResponses.length === 0}
+>
+  <Download className="h-4 w-4 mr-2" />
+
+  {isPending
+    ? "Starting..."
+    : isExporting
+      ? "Exporting..."
+      : "Export CSV"}
+</Button>
       </div>
 
       <div className={`grid gap-4 ${selectedId ? "grid-cols-[1fr_320px]" : "grid-cols-1"}`}>
