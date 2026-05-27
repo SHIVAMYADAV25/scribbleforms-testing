@@ -6,13 +6,29 @@
   "main": "./dist/client.js",
 
   "exports": {
-    ".": "./dist/client.js",
-    "./client": "./dist/client.js",
-    "./server": "./dist/server.js"
+    ".": {
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
+    },
+
+    "./client": {
+      "types": "./dist/client.d.ts",
+      "default": "./dist/client.js"
+    },
+
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
+    },
+
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
+    }
   },
 
   "scripts": {
-    "build": "tsup --entry.client client/index.ts --entry.server server/index.ts --format cjs --out-dir dist",
+    "build": "tsup client/index.ts server/index.ts server/**/*.ts --format cjs --out-dir dist",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage"
   },
