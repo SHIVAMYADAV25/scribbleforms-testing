@@ -4,7 +4,7 @@ import {
   eq, and, gte, lte, desc, sql, count, avg
 } from "drizzle-orm";
 import {
-  responsesTable, analyticsDailyTable, analyticsEventsTable, formsTable
+  responsesTable, analyticsDailyTable, analyticsEventsTable, formsTable,formVersionsTable
 } from "@repo/database";
 import type { formStatsInputSchema } from "./schema";
 import type { z } from "zod";
@@ -156,13 +156,12 @@ export class AnalyticsService {
     const skipMap = new Map(skipEvents.map((e) => [e.fieldId, e.skipCount]));
 
     // Get field metadata from the latest version if available
-    const { formVersionsTable, fieldsTable } = await import("@repo/database/schema");
+    // const { fieldsTable } = await import("@repo/database/schema");
     const [latestVer] = await db
-      .select({ currentVersionId: (await import("@repo/database/schema")).formsTable.currentVersionId })
-      .from((await import("@repo/database/schema")).formsTable)
-      .where(eq((await import("@repo/database/schema")).formsTable.id, formId))
-      .limit(1);
-
+          .select({ currentVersionId: formsTable.currentVersionId })
+          .from(formsTable)
+          .where(eq(formsTable.id, formId))
+          .limit(1);
     let fieldDropOff: Array<{ fieldId: string; fieldLabel: string; fieldOrder: number; dropOffRate: number; avgTimeMs: number }> = [];
     if (latestVer?.currentVersionId) {
       const [ver] = await db
