@@ -22,5 +22,9 @@ export const serverRouter = router({
   apiKeys:   apiKeysRouter,
 });
 
-export { createContext } from "./context";
 export type ServerRouter = typeof serverRouter;
+export { createContext } from "./context";
+export type { TRPCContext } from "./context";
+export { AuthRepository } from "./routes/auth/repository";
+export { submissionEnvelopeSchema } from "./routes/responses/schema";
+export type { SubmissionEnvelope } from "./routes/responses/schema";

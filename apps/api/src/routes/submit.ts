@@ -7,7 +7,7 @@ import {
   responsesTable, responseAnswersTable,
 } from "@repo/database";
 import { eq, and, isNull, sql } from "drizzle-orm";
-import { submissionEnvelopeSchema } from "@repo/trpc/server/routes/responses/schema";
+import { submissionEnvelopeSchema } from "@repo/trpc/server";
 import { FIELD_REGISTRY } from "@repo/constants";
 import { cacheGet } from "@repo/redis";
 import { safeEnqueue, getEmailQueue, getAnalyticsQueue, getWebhookQueue } from "@repo/queues";

@@ -3,7 +3,7 @@
 import { Router } from "express";
 import { OAuth2Client } from "google-auth-library";
 import { randomBytes } from "node:crypto";
-import { AuthRepository } from "@repo/trpc/server/routes/auth/repository";
+import { AuthRepository } from "@repo/trpc/server";
 import { env } from "../env";
 
 const authRepo = new AuthRepository();
