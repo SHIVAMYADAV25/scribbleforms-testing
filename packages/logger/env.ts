@@ -1,8 +1,13 @@
 import { z } from "zod";
 
 const envSchema = z.object({
-  NODE_ENV: z.enum(["development", "prod"]).default("development"),
-  LOGGER_LEVEL: z.enum(["error", "debug", "info"]).optional(),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
+
+  LOGGER_LEVEL: z
+    .enum(["error", "debug", "info"])
+    .optional(),
 });
 
 function createEnv(env: NodeJS.ProcessEnv) {
