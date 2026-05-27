@@ -11,7 +11,6 @@
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^22.15.3",
     "dotenv-cli": "^11.0.0",
-    "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
@@ -20,6 +19,7 @@
     "@repo/queues": "workspace:*",
     "@repo/redis": "workspace:*",
     "@repo/logger": "workspace:*",
+    "tsup": "^8.5.1",
     "bullmq": "^5.51.1",
     "ioredis": "^5.4.2",
     "resend": "^6.12.3",
