@@ -52,7 +52,7 @@ export const authRouter = router({
 
   logout: protectedProcedure
     .meta({ openapi: { method: "POST", path: "/auth/logout", tags: TAGS, summary: "Logout current session" } })
-    .input(z.undefined())
+    .input(z.void())
     .output(z.object({ success: z.boolean() }))
     .mutation(async ({ ctx }) => {
       const token = getAuthToken(ctx);
@@ -63,7 +63,7 @@ export const authRouter = router({
 
   me: protectedProcedure
     .meta({ openapi: { method: "GET", path: "/auth/me", tags: TAGS, summary: "Get current user" } })
-    .input(z.undefined())
+    .input(z.void())
     .output(meOutputSchema)
     .query(async ({ ctx }) => {
       return {
@@ -100,7 +100,7 @@ export const authRouter = router({
 
   logoutAll: protectedProcedure
     .meta({ openapi: { method: "POST", path: "/auth/logout-all", tags: TAGS, summary: "Logout from all devices" } })
-    .input(z.undefined())
+    .input(z.void())
     .output(z.object({ success: z.boolean() }))
     .mutation(async ({ ctx }) => {
       const repo = new AuthRepository();
