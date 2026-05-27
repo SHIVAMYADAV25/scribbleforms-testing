@@ -435,6 +435,9 @@ importers:
 
   packages/database:
     dependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -463,9 +466,6 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@repo/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
       '@types/bcryptjs':
         specifier: ^2.4.6
         version: 2.4.6
