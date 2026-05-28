@@ -73,12 +73,15 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
         userAgent: req.headers["user-agent"] ?? "",
       });
 
-      res.cookie("sf_session", token, {
+      const COOKIE_OPTIONS = {
         httpOnly: true,
-        secure:   env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge:   30 * 24 * 60 * 60 * 1000,
-      });
+        secure: true,
+        sameSite: "none" as const,
+        path: "/",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      };
+
+      res.cookie("sf_session", token, COOKIE_OPTIONS);
 
       return res.redirect(`${env.WEB_URL}/dashboard`);
     } catch (err) {
