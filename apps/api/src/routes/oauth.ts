@@ -73,17 +73,23 @@ if (env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET) {
         userAgent: req.headers["user-agent"] ?? "",
       });
 
+      const isProd = env.NODE_ENV === "production";
+
       const COOKIE_OPTIONS = {
         httpOnly: true,
-        secure: true,
-        sameSite: "none" as const,
+        secure: isProd,
+        sameSite: isProd ? "none" as const : "lax" as const,
         path: "/",
         maxAge: 30 * 24 * 60 * 60 * 1000,
       };
 
       res.cookie("sf_session", token, COOKIE_OPTIONS);
 
-      return res.redirect(`${env.WEB_URL}/dashboard`);
+      return res.send(`
+        <script>
+          window.location.href = "${env.WEB_URL}/dashboard";
+        </script>
+      `);
     } catch (err) {
       console.error("[OAuth] Google callback error:", err);
       return res.redirect(`${env.WEB_URL}/login?error=oauth_failed`);

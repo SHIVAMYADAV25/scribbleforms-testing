@@ -24,12 +24,47 @@ app.use(helmet({
 }));
 
 // ── CORS ───────────────────────────────────────────────────────────────────
-app.use(cors({
-  origin:      env.NODE_ENV === "production" ? env.CORS_ORIGIN : true,
-  credentials: true,
-  methods:     ["GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+const allowedOrigins = (env.CORS_ORIGIN ?? "")
+  .split(",")
+  .map((o) => o.trim())
+  .filter(Boolean);
+
+app.use(
+  cors({
+    origin:
+      env.NODE_ENV === "production"
+        ? (origin, callback) => {
+            if (!origin) {
+              return callback(null, true);
+            }
+
+            if (allowedOrigins.includes(origin)) {
+              return callback(null, true);
+            }
+
+            return callback(
+              new Error(`CORS blocked for origin: ${origin}`)
+            );
+          }
+        : true,
+
+    credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "PATCH",
+      "PUT",
+      "DELETE",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
+  })
+);
 
 // ── Body & cookies ─────────────────────────────────────────────────────────
 app.use(express.json({ limit: "1mb" }));

@@ -4,9 +4,15 @@ import { Request, Response, CookieOptions } from "express";
 const DEFAULT_OPTIONS: CookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "lax",
+
+  sameSite:
+    process.env.NODE_ENV === "production"
+      ? "none"
+      : "lax",
+
   path: "/",
-  maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+
+  maxAge: 30 * 24 * 60 * 60 * 1000,
 };
 
 export function createCookieFactory(res: Response) {
