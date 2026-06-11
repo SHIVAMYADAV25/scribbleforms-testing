@@ -2,13 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import Sidebar from "~/components/Sidebar"; 
-import { Search, SlidersHorizontal, Plus, BarChart3, MoreHorizontal, Trash2, Copy, AlertCircle, CheckCircle2, TrendingUp, Users, Clock } from "lucide-react";
-import { ScribbleButton } from "~/components/scribble/ScribbleButton";
-import Image from "next/image";
-import Link from "next/link";
+import { Search, AlertCircle, CheckCircle2, TrendingUp, Users, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useFormList, useCreateForm, useDeleteForm, useDuplicateForm } from "~/hooks/api/forms";
-import { AnalyticsIcon } from "~/components/icons";
 
 type ToastType = "success" | "error" | "info";
 interface ToastState {
