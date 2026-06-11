@@ -436,9 +436,9 @@ export default function PricingPage() {
                 overflow: "hidden"
               }}
             >
-              <img src="/Qrcode" alt="Payment QR asset" style={{ width: "100%", height: "100%" }} />
-              <QrCode size={40} strokeWidth={1} color="rgba(45,36,22,0.3)" />
-              <span style={{ fontSize: "10px", color: "rgba(45,36,22,0.4)", fontWeight: "bold", fontFamily: "'Nunito', sans-serif", marginTop: "6px" }}>QR ASSET HOLDER</span>
+              <img src="/Qrcode.png" alt="Payment QR asset" style={{ width: "100%", height: "100%" }} />
+              {/* <QrCode size={40} strokeWidth={1} color="rgba(45,36,22,0.3)" /> */}
+              {/* <span style={{ fontSize: "10px", color: "rgba(45,36,22,0.4)", fontWeight: "bold", fontFamily: "'Nunito', sans-serif", marginTop: "6px" }}>QR ASSET HOLDER</span> */}
             </div>
 
             <button 

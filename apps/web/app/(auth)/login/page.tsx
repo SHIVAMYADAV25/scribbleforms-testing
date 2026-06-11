@@ -9,6 +9,7 @@ import { useLogin } from '~/hooks/api/auth';
 import { ScribbleButton } from '~/components/scribble/ScribbleButton';
 import { ScribbleCustomButton, ScribbleCustomInput } from '~/components/scribble/ScribInput';
 import Link from 'next/link';
+import { Eye, EyeOff } from "lucide-react";
 
 const loginValidationSchema = z.object({
   email: z.string().min(1, "Email is required").email("Invalid email address format"),
@@ -21,8 +22,9 @@ const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000';
 
 export default function LoginPage() {
   const loginMut = useLogin();
-  const [showPass] = useState(false);
+  const [showPass, setShowPass] = useState(false);
   const [remember, setRemember] = useState(true);
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
   
   // Base scale state variable
   const [scaleFactor, setScaleFactor] = useState(0.90);
@@ -230,58 +232,92 @@ export default function LoginPage() {
               </div>
 
               {/* Password Interactive Field Wrapper */}
-              <div style={{ marginBottom: '18px',width:"400px",marginLeft:"70px",marginTop:"20px" }}>
-                <label
-                  style={{
-                    fontFamily: "'Caveat', cursive",
-                    fontSize: 'calc(18px * var(--global-scale))',
-                    color: '#5a4a30',
-                    display: 'block',
-                    marginBottom: '6px',
-                  }}
-                >
-                  Password
-                </label>
+<div
+  style={{
+    marginBottom: "18px",
+    width: "400px",
+    marginLeft: "70px",
+    marginTop: "20px",
+  }}
+>
+  <label
+    style={{
+      fontFamily: "'Caveat', cursive",
+      fontSize: "calc(18px * var(--global-scale))",
+      color: "#5a4a30",
+      display: "block",
+      marginBottom: "6px",
+    }}
+  >
+    Password
+  </label>
 
-                <ScribbleCustomInput
-                  {...register('password')}
-                  type={showPass ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  disabled={loginMut.isPending}
-                  leftIcon={
-                    <svg
-                      width="16"
-                      height="16"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                    >
-                      <rect x="5" y="9" width="10" height="9" rx="2" />
-                      <path d="M7 9V7a3 3 0 016 0v2" strokeLinecap="round" />
-                    </svg>
-                  }
-                  style={{
-                    fontFamily: "'Caveat', cursive",
-                    fontSize: showPass ? 'calc(20px * var(--global-scale))' : 'calc(15px * var(--global-scale))',
-                    letterSpacing: showPass ? 'normal' : '4px',
-                  }}
-                />
+  <ScribbleCustomInput
+    {...register("password")}
+    type={showPass ? "text" : "password"}
+    placeholder="••••••••"
+    disabled={loginMut.isPending}
+    leftIcon={
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <rect x="5" y="9" width="10" height="9" rx="2" />
+        <path
+          d="M7 9V7a3 3 0 016 0v2"
+          strokeLinecap="round"
+        />
+      </svg>
+    }
+    rightIcon={
+      <button
+        type="button"
+        onClick={() => setShowPass(!showPass)}
+        style={{
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          color: "#7c5cbf",
+          padding: "0",
+        }}
+      >
+        {showPass ? (
+          <EyeOff size={18} />
+        ) : (
+          <Eye size={18} />
+        )}
+      </button>
+    }
+    style={{
+      fontFamily: "'Caveat', cursive",
+      fontSize: showPass
+        ? "calc(20px * var(--global-scale))"
+        : "calc(15px * var(--global-scale))",
+      letterSpacing: showPass ? "normal" : "4px",
+    }}
+  />
 
-                {errors.password && (
-                  <span
-                    style={{
-                      fontFamily: "'Caveat', cursive",
-                      color: '#bf3939',
-                      fontSize: 'calc(14px * var(--global-scale))',
-                      marginTop: '4px',
-                      display: 'block',
-                    }}
-                  >
-                    {errors.password.message}
-                  </span>
-                )}
-              </div>
+  {errors.password && (
+    <span
+      style={{
+        fontFamily: "'Caveat', cursive",
+        color: "#bf3939",
+        fontSize: "calc(14px * var(--global-scale))",
+        marginTop: "4px",
+        display: "block",
+      }}
+    >
+      {errors.password.message}
+    </span>
+  )}
+</div>
 
               {/* Utility Form Configuration Row Block */}
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', margin: '14px 12px',marginLeft:"70px" ,width:"400px"}}>
@@ -358,7 +394,8 @@ export default function LoginPage() {
               {/* White Scribbly Google Auth Connector Button linking back directly to API Redirect */}
               <ScribbleButton 
                 type="button" 
-                onClick={() => window.location.href = `${API}/auth/google/redirect`}
+                // onClick={() => window.location.href = `${API}/auth/google/redirect`}
+                onClick={() => setShowGoogleModal(true)}
                 style={{
                   width: '400px',
                   marginLeft:"70px",
@@ -448,6 +485,85 @@ export default function LoginPage() {
         </div>
 
       </div>
+
+      {showGoogleModal && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      backgroundColor: "rgba(0,0,0,0.35)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 9999,
+    }}
+    onClick={() => setShowGoogleModal(false)}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        width: "420px",
+        backgroundColor: "#fffdf7",
+        border: "2px solid #2d2416",
+        borderRadius: "16px",
+        padding: "28px",
+        boxShadow: "6px 6px 0px #2d2416",
+        textAlign: "center",
+        transform: "rotate(-0.5deg)",
+      }}
+    >
+      <div
+        style={{
+          fontSize: "48px",
+          marginBottom: "10px",
+        }}
+      >
+        🚧
+      </div>
+
+      <h2
+        style={{
+          fontFamily: "'Caveat', cursive",
+          fontSize: "32px",
+          margin: "0 0 12px 0",
+          color: "#2d2416",
+        }}
+      >
+        Google Login Disabled
+      </h2>
+
+      <p
+        style={{
+          fontFamily: "'Nunito', sans-serif",
+          fontSize: "15px",
+          color: "#5a4a30",
+          lineHeight: 1.6,
+          marginBottom: "22px",
+        }}
+      >
+        The developer is not accepting Google logins right now.
+        <br />
+        He's probably busy fighting bugs or breaking production again.
+      </p>
+
+      <button
+        onClick={() => setShowGoogleModal(false)}
+        style={{
+          backgroundColor: "#f8de7e",
+          border: "2px solid #2d2416",
+          borderRadius: "10px",
+          padding: "10px 24px",
+          cursor: "pointer",
+          fontFamily: "'Caveat', cursive",
+          fontSize: "22px",
+          fontWeight: 700,
+        }}
+      >
+        Got it
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 }

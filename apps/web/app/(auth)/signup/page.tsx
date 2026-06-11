@@ -34,6 +34,7 @@ const SignupPage: NextPage = () => {
 
   // ✅ ADDING STATE FOR PASSWORD VISIBILITY (Solves the "Cannot find name 'showPass'" error)
   const [showPass, setShowPass] = useState(false);
+  const [showGoogleModal, setShowGoogleModal] = useState(false);
 
   useEffect(() => {
     function handleResize() {
@@ -300,7 +301,8 @@ const SignupPage: NextPage = () => {
 
               {/* Primary Action Button (Displays Loading State during API call) */}
               <ScribbleCustomButton
-                type="submit"
+                type="button"
+                onClick={() => setShowGoogleModal(true)}
                 bg="#f8de7e"
                 disabled={signupMut.isPending}
                 style={{ width: '100%', marginTop: '10px', cursor: signupMut.isPending ? 'not-allowed' : 'pointer' }}
@@ -325,7 +327,8 @@ const SignupPage: NextPage = () => {
               {/* Google Auth Option Button linked to Production redirect */}
               <ScribbleButton 
                 type="button" 
-                onClick={() => window.location.href = `${API}/auth/google/redirect`}
+                // onClick={() => window.location.href = `${API}/auth/google/redirect`}
+                onClick={() => setShowGoogleModal(true)}
                 style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', fontFamily: "'Caveat', cursive", fontSize: '18px', fontWeight: 600, color: '#1e1608', padding: '8px 16px', cursor: signupMut.isPending ? 'not-allowed' : 'pointer' }}
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" style={{ flexShrink: 0 }}>
@@ -354,6 +357,85 @@ const SignupPage: NextPage = () => {
         </div>
 
       </div>
+
+      {showGoogleModal && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.35)",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 99999,
+    }}
+    onClick={() => setShowGoogleModal(false)}
+  >
+    <div
+      onClick={(e) => e.stopPropagation()}
+      style={{
+        width: "420px",
+        background: "#fffdf7",
+        border: "2px solid #2d2416",
+        borderRadius: "18px",
+        padding: "28px",
+        boxShadow: "6px 6px 0px #2d2416",
+        textAlign: "center",
+        transform: "rotate(-0.5deg)",
+      }}
+    >
+      <div
+        style={{
+          fontSize: "46px",
+          marginBottom: "10px",
+        }}
+      >
+        🚧
+      </div>
+
+      <h2
+        style={{
+          fontFamily: "'Caveat', cursive",
+          fontSize: "34px",
+          margin: "0 0 10px 0",
+          color: "#2d2416",
+        }}
+      >
+        Google Signup Disabled
+      </h2>
+
+      <p
+        style={{
+          fontFamily: "'Nunito', sans-serif",
+          fontSize: "15px",
+          color: "#5a4a30",
+          lineHeight: 1.6,
+          marginBottom: "22px",
+        }}
+      >
+        The developer is not accepting Google signups right now.
+        <br />
+        He joined another hackathon and is making questionable life choices.
+      </p>
+
+      <button
+        onClick={() => setShowGoogleModal(false)}
+        style={{
+          background: "#f8de7e",
+          border: "2px solid #2d2416",
+          borderRadius: "10px",
+          padding: "10px 24px",
+          cursor: "pointer",
+          fontFamily: "'Caveat', cursive",
+          fontSize: "22px",
+          fontWeight: 700,
+        }}
+      >
+        Got it ✨
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 };

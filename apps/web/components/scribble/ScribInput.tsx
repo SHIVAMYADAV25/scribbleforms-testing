@@ -5,17 +5,70 @@ import { ScribbleContainer } from "./ScribbleEngine";
 /* ── SCRIBBLE INPUT ── */
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
   containerStyle?: CSSProperties;
 }
-export function ScribbleCustomInput({ leftIcon, containerStyle, style, ...props }: InputProps) {
+
+export function ScribbleCustomInput({
+  leftIcon,
+  rightIcon,
+  containerStyle,
+  style,
+  ...props
+}: InputProps) {
   return (
-    <ScribbleContainer fill="#fffdf7" amp={1.8} passes={2} sw={0.9} style={{ width: "100%", ...containerStyle }}>
-      <div style={{ display: "flex", alignItems: "center", padding: "6px 12px", minHeight: 38 }}>
-        {leftIcon && <div style={{ marginRight: 8, display: "flex", alignItems: "center" }}>{leftIcon}</div>}
-        <input {...props} style={{
-          flex: 1, background: "none", border: "none", outline: "none",
-          fontFamily: "var(--font-body), sans-serif", fontSize: 14, color: "var(--ink-1)", ...style
-        }} />
+    <ScribbleContainer
+      fill="#fffdf7"
+      amp={1.8}
+      passes={2}
+      sw={0.9}
+      style={{ width: "100%", ...containerStyle }}
+    >
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          padding: "6px 12px",
+          minHeight: 38,
+        }}
+      >
+        {leftIcon && (
+          <div
+            style={{
+              marginRight: 8,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            {leftIcon}
+          </div>
+        )}
+
+        <input
+          {...props}
+          style={{
+            flex: 1,
+            background: "none",
+            border: "none",
+            outline: "none",
+            fontFamily: "var(--font-body), sans-serif",
+            fontSize: 14,
+            color: "var(--ink-1)",
+            ...style,
+          }}
+        />
+
+        {rightIcon && (
+          <div
+            style={{
+              marginLeft: 8,
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            {rightIcon}
+          </div>
+        )}
       </div>
     </ScribbleContainer>
   );
