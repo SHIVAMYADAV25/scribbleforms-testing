@@ -3,7 +3,7 @@ import db from "@repo/database";
 import { eq, and, desc, gte, lte, count, sql, inArray } from "drizzle-orm";
 import {
   responsesTable, responseAnswersTable, exportJobsTable, formsTable
-} from "@repo/database";
+} from "@repo/database/schema";
 
 export class ResponseRepository {
   async listForForm(opts: {
@@ -100,24 +100,9 @@ export class ResponseRepository {
     if (!form || form.userId !== userId) return null;
 
     const answers = await db
-  .select({
-    id: responseAnswersTable.id,
-    fieldId: responseAnswersTable.fieldId,
-    fieldType: responseAnswersTable.fieldType,
-
-    label: sql<string>`fields.label`,
-
-    valueText: responseAnswersTable.valueText,
-    valueNumber: responseAnswersTable.valueNumber,
-    valueArray: responseAnswersTable.valueArray,
-    valueJson: responseAnswersTable.valueJson,
-  })
-  .from(responseAnswersTable)
-  .leftJoin(
-    sql`fields`,
-    eq(sql`fields.id`, responseAnswersTable.fieldId)
-  )
-  .where(eq(responseAnswersTable.responseId, responseId));
+      .select()
+      .from(responseAnswersTable)
+      .where(eq(responseAnswersTable.responseId, responseId));
 
     return { ...response, createdAt: response.createdAt.toISOString(), answers };
   }

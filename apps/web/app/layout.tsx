@@ -1,22 +1,18 @@
-// apps/web/app/layout.tsx
-import type { Metadata } from "next";
-import localFont from "next/font/local";
-import "./globals.css";
 import { GlobalProviders } from "~/providers/global";
-
-const geistSans = localFont({ src: "./fonts/GeistVF.woff", variable: "--font-geist-sans" });
-const geistMono = localFont({ src: "./fonts/GeistMonoVF.woff", variable: "--font-geist-mono" });
-
-export const metadata: Metadata = {
-  title: "ScribbleForms — Build Forms That Feel Human",
-  description: "Create beautiful forms, collect responses, and analyse data.",
-};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <GlobalProviders>{children}</GlobalProviders>
+      <head>
+        {/* Your standard meta, links, fonts */}
+      </head>
+      {/* Set a dark/neutral desktop matte background color here */}
+      <body style={{ margin: 0, padding: 0, backgroundColor: "#1e1a15", minHeight: "100vh" }}>
+        <GlobalProviders>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh", width: "100%" }}>
+            {children}
+          </div>
+        </GlobalProviders>
       </body>
     </html>
   );

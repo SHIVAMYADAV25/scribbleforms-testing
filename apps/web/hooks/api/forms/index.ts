@@ -1,10 +1,9 @@
-// apps/web/hooks/api/forms/index.ts
 "use client";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { trpc } from "~/trpc/client";
 import { getErrorMessage } from "~/lib/errors";
-import { useUIStore } from "~/stores/ui.store";
+import { useUIStore } from "~/store/ui.store";
 
 export function useFormList(filters: { status?: "draft" | "published" | "archived"; search?: string } = {}) {
   return trpc.forms.list.useInfiniteQuery(
@@ -17,8 +16,22 @@ export function useFormDetail(formId: string) {
   return trpc.forms.getById.useQuery({ id: formId }, { staleTime: 0, enabled: !!formId });
 }
 
-export function usePublicForm(slug: string) {
-  return trpc.forms.getPublic.useQuery({ slug }, { staleTime: 60_000, retry: false });
+// FIX: was staleTime:60_000 with no refetchOnMount.
+// When the user enters a password the parent sets `password` state which changes
+// the query key — but the old staleTime meant React Query served the cached
+// { requiresPassword:true } blob instead of re-fetching with the new password.
+// staleTime:0 when a password is present forces a fresh fetch every time.
+// refetchOnMount:true makes the page always load fresh data on mount.
+export function usePublicForm(slug: string, password: string | undefined) {
+  return trpc.forms.getPublic.useQuery(
+    { slug, password },
+    {
+      staleTime:      password ? 0 : 60_000,
+      retry:          false,
+      enabled:        !!slug,
+      refetchOnMount: true,
+    }
+  );
 }
 
 export function useExplore(filters = {}) {
@@ -50,6 +63,9 @@ export function useUpdateForm(formId: string) {
     onSuccess: () => {
       setAutosaveStatus("saved");
       utils.forms.getById.invalidate({ id: formId });
+      // FIX: reset indicator to idle after 2s — without this "All changes saved"
+      // stays green forever and the user can't tell if a NEW save is in-flight.
+      setTimeout(() => setAutosaveStatus("idle"), 2000);
     },
     onError: () => setAutosaveStatus("error"),
   });
@@ -105,12 +121,13 @@ export function useDuplicateForm() {
   });
 }
 
-// Fields
+// ── Fields ────────────────────────────────────────────────────────────────
+
 export function useAddField(formId: string) {
   const utils = trpc.useUtils();
   return trpc.fields.addField.useMutation({
     onSuccess: () => utils.forms.getById.invalidate({ id: formId }),
-    onError: (err) => toast.error(getErrorMessage(err)),
+    onError:   (err) => toast.error(getErrorMessage(err)),
   });
 }
 
@@ -122,6 +139,8 @@ export function useUpdateField(formId: string) {
     onSuccess: () => {
       setAutosaveStatus("saved");
       utils.forms.getById.invalidate({ id: formId });
+      // FIX: same as useUpdateForm — reset to idle after 2s
+      setTimeout(() => setAutosaveStatus("idle"), 2000);
     },
     onError: () => setAutosaveStatus("error"),
   });
@@ -131,7 +150,7 @@ export function useDeleteField(formId: string) {
   const utils = trpc.useUtils();
   return trpc.fields.deleteField.useMutation({
     onSuccess: () => utils.forms.getById.invalidate({ id: formId }),
-    onError: (err) => toast.error(getErrorMessage(err)),
+    onError:   (err) => toast.error(getErrorMessage(err)),
   });
 }
 
@@ -146,6 +165,6 @@ export function useDuplicateField(formId: string) {
   const utils = trpc.useUtils();
   return trpc.fields.duplicate.useMutation({
     onSuccess: () => utils.forms.getById.invalidate({ id: formId }),
-    onError: (err) => toast.error(getErrorMessage(err)),
+    onError:   (err) => toast.error(getErrorMessage(err)),
   });
 }

@@ -1,9 +1,8 @@
-// packages/validators/src/submission-schema.ts
+// FILE: packages/validators/src/submission-schema.ts
 // Zod schemas shared between frontend form renderer and backend submission handler.
 // Frontend uses these to validate before sending; backend uses the same schemas to validate on receipt.
 import { z } from "zod";
 
-/** The outer envelope for every form submission */
 export const submissionEnvelopeSchema = z.object({
   formVersionId: z.string().uuid("formVersionId must be a valid UUID"),
   answers:       z.record(z.string(), z.unknown()),
@@ -38,6 +37,7 @@ export function buildFieldSchema(fields: Array<{
       case "email":
         schema = z.string().email("Please enter a valid email address");
         break;
+
       case "number": {
         let n = z.number();
         if (field.config?.min !== undefined) n = n.min(Number(field.config.min));
@@ -45,27 +45,49 @@ export function buildFieldSchema(fields: Array<{
         schema = n;
         break;
       }
+
       case "rating": {
         const maxRating = Number(field.config?.max ?? 5);
         schema = z.number().int().min(1).max(maxRating);
         break;
       }
+
       case "checkbox":
         schema = z.boolean();
         break;
-      case "multi_select":
-        schema = z.array(z.string());
+
+      // FIX: was z.array(z.string()) — now validates against the actual allowed options
+      // so a tampered submission with invalid values is rejected by the same logic as
+      // single_select. Falls back to z.array(z.string()) when no options are configured.
+      case "multi_select": {
+        const opts = Array.isArray(field.config?.options)
+          ? (field.config!.options as any[]).map((o) =>
+              String(typeof o === "object" ? (o.value ?? o.label ?? o) : o)
+            )
+          : [];
+        schema = opts.length > 0
+          ? z.array(z.enum(opts as [string, ...string[]]))
+          : z.array(z.string());
         break;
+      }
+
       case "date":
         schema = z.string().min(1, "Please select a date");
         break;
+
+      // FIX: was mapping options as `o.value ?? o` which fails for plain string arrays
+      // (our builder stores options as plain strings, not { value, label } objects).
+      // Now handles both formats: plain strings AND { value } / { label } objects.
       case "single_select": {
         const opts = Array.isArray(field.config?.options)
-          ? (field.config!.options as any[]).map((o) => String(o.value ?? o))
+          ? (field.config!.options as any[]).map((o) =>
+              String(typeof o === "object" ? (o.value ?? o.label ?? o) : o)
+            )
           : [];
         schema = opts.length > 0 ? z.enum(opts as [string, ...string[]]) : z.string();
         break;
       }
+
       default: {
         let s = z.string();
         if (field.config?.minLength) s = s.min(Number(field.config.minLength));

@@ -7,7 +7,7 @@ import { FormRepository } from "./repository";
 import {
   createFormInputSchema, updateFormInputSchema,
   formOutputSchema, formListInputSchema, formListOutputSchema,
-  formDetailOutputSchema,
+  formDetailOutputSchema, publicFormOutputSchema,
 } from "./schema";
 import { domainError } from "../../errors";
 import { PLAN_LIMITS } from "@repo/constants";
@@ -33,7 +33,9 @@ export const formsRouter = router({
     .input(z.object({ id: z.string().uuid() }))
     .output(formDetailOutputSchema)
     .query(async ({ input, ctx }) => {
+      console.log("ninput id" ,input.id, "ctx user id",ctx.user!.id)
       const form = await formService.getByIdForUser(input.id, ctx.user!.id);
+      console.log(form)
       if (!form) throw domainError("FORM_NOT_FOUND", "Form not found", "NOT_FOUND");
       return form;
     }),
@@ -83,57 +85,13 @@ export const formsRouter = router({
     .input(z.object({ id: z.string().uuid(), data: updateFormInputSchema }))
     .output(formOutputSchema)
     .mutation(async ({ input, ctx }) => {
-  const existing = await formService.assertOwnership(
-    input.id,
-    ctx.user!.id
-  );
-
-  const limits = PLAN_LIMITS[ctx.user!.plan];
-
-if (
-  input.data.password &&
-  !limits.hasPasswordProtection
-) {
-  throw domainError(
-    "PLAN_FEATURE_LOCKED",
-    "Password protection requires a paid plan",
-    "FORBIDDEN"
-  );
-}
-
-if (
-  input.data.customSlug &&
-  !limits.hasCustomSlug
-) {
-  throw domainError(
-    "PLAN_FEATURE_LOCKED",
-    "Custom slugs require a paid plan",
-    "FORBIDDEN"
-  );
-}
-
-  await cacheDel(`sf:form:public:${existing.slug}`);
-
-  if (existing.customSlug) {
-    await cacheDel(
-      `sf:form:public:${existing.customSlug}`
-    );
-  }
-
-  const form = await formService.update(
-    input.id,
-    input.data
-  );
-
-  await logAudit({
-    userId: ctx.user!.id,
-    action: "form.update",
-    entityType: "form",
-    entityId: input.id,
-  });
-
-  return form;
-}),
+      const existing = await formService.assertOwnership(input.id, ctx.user!.id);
+      await cacheDel(`sf:form:public:${existing.slug}`);
+      if (existing.customSlug) await cacheDel(`sf:form:public:${existing.customSlug}`);
+      const form = await formService.update(input.id, input.data);
+      await logAudit({ userId: ctx.user!.id, action: "form.update", entityType: "form", entityId: input.id });
+      return form;
+    }),
 
   publish: protectedProcedure
     .meta({ openapi: { method: "POST", path: "/forms/{id}/publish", tags: TAGS, summary: "Publish a form" } })

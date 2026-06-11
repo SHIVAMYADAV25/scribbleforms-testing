@@ -1,15 +1,8 @@
-// packages/trpc/server/routes/forms/service.ts
+// FILE: packages/trpc/server/routes/forms/service.ts
 import { FormRepository } from "./repository";
 import type { CreateFormInput, UpdateFormInput } from "./schema";
 import { domainError } from "../../errors";
 import { verifyFormPassword } from "./repository";
-import db from "@repo/database";
-
-import {
-  formVersionsTable,
-} from "@repo/database";
-
-import { eq } from "drizzle-orm";
 
 export class FormService {
   constructor(private repository: FormRepository) {}
@@ -32,16 +25,23 @@ export class FormService {
     if (form.status !== "published") return null;
     if (form.expiresAt && new Date(form.expiresAt) < new Date()) return null;
 
-    // Password check — uses bcrypt comparison (timing-safe)
+    // FIX: was returning `null` on wrong password — frontend got a 404-like error
+    // with no way to distinguish "not found" from "wrong password".
+    // Now returns { requiresPassword: true, wrongPassword: true } so the
+    // PasswordGate component can show "Incorrect password" feedback.
     if (form.passwordHash) {
       if (!password) return { requiresPassword: true };
       const valid = verifyFormPassword(password, form.passwordHash);
-      if (!valid) return null;
+      if (!valid) return { requiresPassword: true, wrongPassword: true };
     }
 
-    // Get fields from current version snapshot
+    // Load fields from the published version snapshot (not the live draft fields)
+    // so respondents always see the version that was published, not in-progress edits.
     let fields: unknown[] = [];
     if (form.currentVersionId) {
+      const db = (await import("@repo/database")).default;
+      const { formVersionsTable } = await import("@repo/database/schema");
+      const { eq } = await import("drizzle-orm");
       const [ver] = await db
         .select()
         .from(formVersionsTable)
@@ -74,7 +74,6 @@ export class FormService {
   }
 
   async publish(id: string, userId: string) {
-    // Verify has fields
     const form = await this.repository.findByIdWithFields(id, userId);
     if (!form || !form.fields || form.fields.length === 0) {
       throw domainError("FORM_EMPTY", "Cannot publish a form with no fields", "BAD_REQUEST");

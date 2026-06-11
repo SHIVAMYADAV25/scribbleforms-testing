@@ -4,8 +4,8 @@ import {
   eq, and, gte, lte, desc, sql, count, avg
 } from "drizzle-orm";
 import {
-  responsesTable, analyticsDailyTable, analyticsEventsTable, formsTable,formVersionsTable
-} from "@repo/database";
+  responsesTable, analyticsDailyTable, analyticsEventsTable, formsTable
+} from "@repo/database/schema";
 import type { formStatsInputSchema } from "./schema";
 import type { z } from "zod";
 
@@ -37,7 +37,27 @@ export class AnalyticsService {
     const totalCompletions = daily.reduce((s, d) => s + d.completions, 0);
     const totalAbandons    = daily.reduce((s, d) => s + d.abandons, 0);
 
-    const completionRate = totalStarts > 0 ? Math.round((totalCompletions / totalStarts) * 100) : 0;
+    // FIX: analyticsDailyTable is only written by the queue worker.
+    // If the worker wasn't running when responses came in, daily counts are 0
+    // even though responsesTable has the real data.
+    // Fall back to a direct count from responsesTable so analytics is never empty.
+    let effectiveCompletions = totalCompletions;
+    if (totalCompletions === 0) {
+      const [directCount] = await db
+        .select({ count: count() })
+        .from(responsesTable)
+        .where(
+          and(
+            eq(responsesTable.formId, formId),
+            eq(responsesTable.isComplete, true),
+            gte(responsesTable.createdAt, start),
+            lte(responsesTable.createdAt, end)
+          )
+        );
+      effectiveCompletions = Number(directCount?.count ?? 0);
+    }
+
+    const completionRate = totalStarts > 0 ? Math.round((effectiveCompletions / totalStarts) * 100) : 0;
     const dropOffRate    = totalStarts > 0 ? Math.round((totalAbandons / totalStarts) * 100) : 0;
 
     // avg time from responses table
@@ -54,11 +74,34 @@ export class AnalyticsService {
 
     const avgTimeToCompleteMs = Math.round(Number(avgRow?.avg ?? 0));
 
-    // Responses over time
-    const responsesOverTime = daily.map((d) => ({
-      date:  d.date as string,
-      count: d.completions,
-    }));
+    // FIX: when analyticsDailyTable is empty, build responses-over-time from
+    // the responses table directly so the chart always shows real data
+    let responsesOverTime: Array<{ date: string; count: number }>;
+    if (daily.length > 0 && daily.some(d => d.completions > 0)) {
+      responsesOverTime = daily.map((d) => ({
+        date:  d.date as string,
+        count: d.completions,
+      }));
+    } else {
+      // Group actual responses by date
+      const groupRows = await db
+        .select({
+          date:  sql<string>`date_trunc('day', ${responsesTable.createdAt})::date::text`,
+          count: count(),
+        })
+        .from(responsesTable)
+        .where(
+          and(
+            eq(responsesTable.formId, formId),
+            eq(responsesTable.isComplete, true),
+            gte(responsesTable.createdAt, start),
+            lte(responsesTable.createdAt, end)
+          )
+        )
+        .groupBy(sql`date_trunc('day', ${responsesTable.createdAt})::date`)
+        .orderBy(sql`date_trunc('day', ${responsesTable.createdAt})::date`);
+      responsesOverTime = groupRows.map(r => ({ date: r.date, count: Number(r.count) }));
+    }
 
     // Previous period (same duration before start)
     const duration = end.getTime() - start.getTime();
@@ -127,13 +170,16 @@ export class AnalyticsService {
       } catch { source = ref.slice(0, 50) || "Direct"; }
       sourceMap.set(source, (sourceMap.get(source) ?? 0) + 1);
     }
+    const totalSourceCount = [...sourceMap.values()].reduce((a, b) => a + b, 0) || 1;
     const topSources = [...sourceMap.entries()]
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
-      .map(([source, count]) => ({
+      .map(([source, cnt]) => ({
         source,
-        count,
-        percentage: totalCompletions > 0 ? Math.round((count / totalCompletions) * 100) : 0,
+        count: cnt,
+        // FIX: percentage was count/totalCompletions which is 0 when queue hasn't run
+        // Use share of all tracked sources as the denominator
+        percentage: Math.round((cnt / totalSourceCount) * 100),
       }));
 
     // ── Field drop-off from analytics events ────────────────────────────────
@@ -156,12 +202,13 @@ export class AnalyticsService {
     const skipMap = new Map(skipEvents.map((e) => [e.fieldId, e.skipCount]));
 
     // Get field metadata from the latest version if available
-    // const { fieldsTable } = await import("@repo/database/schema");
+    const { formVersionsTable, fieldsTable } = await import("@repo/database/schema");
     const [latestVer] = await db
-          .select({ currentVersionId: formsTable.currentVersionId })
-          .from(formsTable)
-          .where(eq(formsTable.id, formId))
-          .limit(1);
+      .select({ currentVersionId: (await import("@repo/database/schema")).formsTable.currentVersionId })
+      .from((await import("@repo/database/schema")).formsTable)
+      .where(eq((await import("@repo/database/schema")).formsTable.id, formId))
+      .limit(1);
+
     let fieldDropOff: Array<{ fieldId: string; fieldLabel: string; fieldOrder: number; dropOffRate: number; avgTimeMs: number }> = [];
     if (latestVer?.currentVersionId) {
       const [ver] = await db
@@ -183,7 +230,7 @@ export class AnalyticsService {
     }
 
     return {
-      totalResponses:       totalCompletions,
+      totalResponses:       effectiveCompletions,
       completionRate,
       avgTimeToCompleteMs,
       totalViews,
@@ -194,8 +241,8 @@ export class AnalyticsService {
       responsesByDayOfWeek: dowCounts,
       completionFunnel: [
         { stage: "Viewed",    count: totalViews },
-        { stage: "Started",   count: totalStarts },
-        { stage: "Completed", count: totalCompletions },
+        { stage: "Started",   count: totalStarts > 0 ? totalStarts : effectiveCompletions },
+        { stage: "Completed", count: effectiveCompletions },
       ],
       fieldDropOff,
       previousPeriod: {

@@ -1,101 +1,259 @@
-// apps/web/components/sidebar.tsx
 "use client";
+
+import React from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  LayoutDashboard, FileText, BarChart2, Users, Palette,
-  Settings, Share2, LogOut, ChevronLeft, ChevronRight,
-  Globe
+import { 
+  Palette, 
+  Settings, 
+  GitBranch, 
+  Layers, 
+  Sparkles,
+  NotebookIcon,
+  DollarSign
 } from "lucide-react";
-import { cn } from "~/lib/utils";
-import { useUIStore } from "~/stores/ui.store";
-import { useLogout, useMe } from "~/hooks/api/auth";
-import { Button } from "~/components/ui/button";
-import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { Skeleton } from "~/components/ui/skeleton";
+import { AnalyticsIcon, FormsIcon, HomeIcon, ResponsesIcon } from "./icons";
 
-const navItems = [
-  { href: "/dashboard",                label: "Dashboard",  icon: LayoutDashboard },
-  { href: "/dashboard/forms",          label: "Forms",      icon: FileText },
-  { href: "/dashboard/analytics",      label: "Analytics",  icon: BarChart2 },
-  { href: "/dashboard/responses",      label: "Responses",  icon: Users },
-  { href: "/dashboard/themes",         label: "Themes",     icon: Palette },
-  { href: "/explore",                  label: "Explore",    icon: Globe },
-  { href: "/dashboard/settings",       label: "Settings",   icon: Settings },
-];
+interface SidebarProps {
+  activeTab?: string;
+}
 
-export function Sidebar() {
+export default function Sidebar({ activeTab }: SidebarProps) {
   const pathname = usePathname();
-  const { sidebarCollapsed, toggleSidebar } = useUIStore();
-  const { data: me, isLoading } = useMe();
-  const logout = useLogout();
+
+  const buildItems = [
+    { name: "Dashboard", href: "/dashboard", icon: HomeIcon },
+    { name: "Form", href: "/dashboard/forms", icon: FormsIcon },
+    // { name: "Design", href: "/design", icon: Palette },
+    // { name: "explore", href: "/explore", icon: Sparkles },
+    {name : "response" , href: "/dashboard/response" , icon : ResponsesIcon},
+    {name : "analytics" , href: "/dashboard/analytics" , icon : AnalyticsIcon}
+  ];
+
+  const helpItems = [
+    // { name: "Settings", href: "/settings", icon: Settings },
+    { name: "Price", href: "/price", icon: DollarSign }
+  ];
+
+  const isItemActive = (item: { name: string; href: string }) => {
+    if (activeTab) return activeTab.toLowerCase() === item.name.toLowerCase();
+    return pathname === item.href;
+  };
 
   return (
-    <aside className={cn(
-      "flex flex-col h-screen border-r bg-card transition-all duration-200 flex-shrink-0",
-      sidebarCollapsed ? "w-16" : "w-56"
-    )}>
-      {/* Logo */}
-      <div className="flex items-center justify-between p-4 border-b h-14">
-        {!sidebarCollapsed && (
-          <span className="font-bold text-base truncate">ScribbleForms</span>
-        )}
-        <Button variant="ghost" size="icon" className="h-7 w-7 shrink-0" onClick={toggleSidebar}>
-          {sidebarCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </Button>
-      </div>
-
-      {/* Nav */}
-      <nav className="flex-1 p-2 space-y-1 overflow-y-auto">
-        {navItems.map(({ href, label, icon: Icon }) => {
-          const active = pathname === href || pathname.startsWith(href + "/");
-          return (
-            <Link key={href} href={href}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-md text-sm transition-colors",
-                active
-                  ? "bg-primary text-primary-foreground"
-                  : "text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-              )}>
-              <Icon className="h-4 w-4 shrink-0" />
-              {!sidebarCollapsed && <span>{label}</span>}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* User footer */}
-      <div className="p-2 border-t">
-        {isLoading ? (
-          <div className="flex items-center gap-2 px-2 py-1.5">
-            <Skeleton className="h-7 w-7 rounded-full" />
-            {!sidebarCollapsed && <Skeleton className="h-4 w-24" />}
-          </div>
-        ) : me ? (
-          <div className="flex items-center gap-2 px-2 py-1.5">
-            <Avatar className="h-7 w-7 shrink-0">
-              <AvatarFallback className="text-xs">
-                {me.fullName?.charAt(0) ?? me.email.charAt(0).toUpperCase()}
-              </AvatarFallback>
-            </Avatar>
-            {!sidebarCollapsed && (
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium truncate">{me.fullName ?? me.email}</p>
-                <p className="text-xs text-muted-foreground capitalize">{me.plan}</p>
-              </div>
-            )}
-          </div>
-        ) : null}
-        <Button
-          variant="ghost" size="sm"
-          className={cn("w-full mt-1 text-muted-foreground", sidebarCollapsed ? "px-0 justify-center" : "justify-start gap-2")}
-          onClick={() => logout.mutate(undefined)}
-          disabled={logout.isPending}
+    <div 
+      style={{ 
+        width: "200px", 
+        height: "100%", 
+        display: "flex", 
+        flexDirection: "column", 
+        paddingTop: "24px", 
+        paddingBottom: "4px", 
+        userSelect: "none",
+        fontFamily: "'Nunito', sans-serif",
+        boxSizing: "border-box"
+      }}
+    >
+      {/* ── LOGO SECTION ── */}
+      <div style={{ marginBottom: "12px", paddingLeft: "4px", flexShrink: 0 }}>
+        <h1 
+          style={{ 
+            fontSize: "24px", 
+            fontWeight: "bold", 
+            color: "#1a150e", 
+            position: "relative", 
+            letterSpacing: "0.02em",
+            fontFamily: "'Caveat', cursive",
+            margin: 0
+          }}
         >
-          <LogOut className="h-4 w-4 shrink-0" />
-          {!sidebarCollapsed && "Logout"}
-        </Button>
+          <Link href="/dashboard" style={{ textDecoration: "none", color: "#1a150e" }}>
+            ScribbleForms
+          </Link>
+          <span 
+            style={{ 
+              position: "absolute", 
+              bottom: "-4px", 
+              left: 0, 
+              width: "110px", 
+              height: "2px", 
+              backgroundColor: "rgba(99, 76, 201, 0.5)", 
+              borderRadius: "9999px", 
+              display: "block" 
+            }}
+          />
+        </h1>
       </div>
-    </aside>
+
+      {/* ── MAIN VERTICAL LAYOUT SCROLL SYSTEM ── 
+          This wrapper column prevents elements from jumping around when scaling
+      */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "28px", marginTop: "40px", width: "100%" }}>
+        
+        {/* ── BUILD SECTION ── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
+          <span 
+            style={{ 
+              fontSize: "11px", 
+              fontWeight: "bold", 
+              textTransform: "uppercase", 
+              letterSpacing: "0.05em", 
+              color: "rgba(45, 36, 22, 0.4)", 
+              paddingLeft: "8px", 
+              marginBottom: "4px" 
+            }}
+          >
+            Build
+          </span>
+          
+          {buildItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = isItemActive(item);
+
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  padding: "8px 12px",
+                  width: "100%",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  borderRadius: "8px",
+                  position: "relative",
+                  textAlign: "left",
+                  textDecoration: "none",
+                  color: isActive ? "#2d2416" : "rgba(45, 36, 22, 0.7)",
+                  transition: "all 0.15s ease",
+                  boxSizing: "border-box"
+                }}
+              >
+                {isActive && (
+                  <div 
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      backgroundColor: "#fce09b",
+                      opacity: 0.85,
+                      borderRadius: "6px",
+                      zIndex: -1,
+                      clipPath: "polygon(1% 5%, 99% 2%, 96% 95%, 4% 98%)"
+                    }}
+                  />
+                )}
+                <Icon style={{ width: "16px", height: "16px", flexShrink: 0 }} />
+                <span style={{ textTransform: "capitalize" }}>{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
+
+        {/* ── HELP / EXTRA OPTIONS SECTION ── */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "6px", width: "100%" }}>
+          <span 
+            style={{ 
+              fontSize: "11px", 
+              fontWeight: "bold", 
+              textTransform: "uppercase", 
+              letterSpacing: "0.05em", 
+              color: "rgba(45, 36, 22, 0.4)", 
+              paddingLeft: "8px", 
+              marginBottom: "4px" 
+            }}
+          >
+            Help
+          </span>
+          
+          {helpItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = isItemActive(item);
+            
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "12px",
+                  padding: "8px 12px",
+                  width: "100%",
+                  fontSize: "14px",
+                  fontWeight: 600,
+                  borderRadius: "8px",
+                  position: "relative",
+                  textAlign: "left",
+                  textDecoration: "none",
+                  color: isActive ? "#2d2416" : "rgba(45, 36, 22, 0.7)",
+                  transition: "all 0.15s ease",
+                  boxSizing: "border-box"
+                }}
+              >
+                {isActive && (
+                  <div 
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      backgroundColor: "#fce09b",
+                      opacity: 0.85,
+                      borderRadius: "6px",
+                      zIndex: -1,
+                      clipPath: "polygon(2% 3%, 98% 6%, 95% 97%, 3% 94%)"
+                    }}
+                  />
+                )}
+                <Icon style={{ width: "16px", height: "16px", flexShrink: 0 }} />
+                <span>{item.name}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── STICKY PURPLE NOTE IMAGE ANCHORED AT ABSOLUTE BOTTOM ── */}
+      <div 
+        style={{ 
+          position: "relative", 
+          marginTop: "130px", 
+          width: "172px", 
+          height: "172px", 
+          alignSelf: "center",
+          marginRight: "auto",
+          marginLeft: "auto",
+          filter: "drop-shadow(0px 3px 5px rgba(0,0,0,0.05))",
+          flexShrink: 0
+        }}
+      >
+        <Image
+          src="/formBuilderNote.png"
+          alt="Need help? We're here for you!"
+          fill
+          priority
+          style={{ objectFit: "contain" }}
+        />
+        
+        <button 
+          onClick={() => alert("haaa haa i tricked u. u are alone from starting")}
+          style={{ 
+            position: "absolute", 
+            bottom: "22px", 
+            left: "20px", 
+            width: "95px", 
+            height: "28px", 
+            borderRadius: "6px", 
+            cursor: "pointer", 
+            opacity: 0,
+            border: "none",
+            background: "transparent"
+          }}
+          aria-label="Chat with us"
+        />
+      </div>
+
+    </div>
   );
 }

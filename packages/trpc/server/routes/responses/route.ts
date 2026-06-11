@@ -73,6 +73,7 @@ export const responsesRouter = router({
       fileUrl: z.string().nullable(),
     }))
     .query(async ({ input }) => {
-      return responseRepo.getExportStatus(input.exportJobId);
+      const exportJobId = responseRepo.getExportStatus(input.exportJobId);
+      return exportJobId
     }),
 });

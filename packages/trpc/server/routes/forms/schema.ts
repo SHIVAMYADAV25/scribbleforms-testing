@@ -1,4 +1,4 @@
-// packages/trpc/server/routes/forms/schema.ts
+// FILE: packages/trpc/server/routes/forms/schema.ts
 import { z } from "zod";
 
 export const createFormInputSchema = z.object({
@@ -55,7 +55,6 @@ export const formListOutputSchema = z.object({
 export type CreateFormInput = z.infer<typeof createFormInputSchema>;
 export type UpdateFormInput = z.infer<typeof updateFormInputSchema>;
 
-// Theme token output (CSS variables map)
 export const themeOutputSchema = z.object({
   id:         z.string().uuid(),
   name:       z.string(),
@@ -69,7 +68,6 @@ export const themeOutputSchema = z.object({
   createdAt:  z.string().datetime(),
 }).nullable();
 
-// Field output reused for the form detail endpoint
 export const fieldInFormSchema = z.object({
   id:          z.string().uuid(),
   formId:      z.string().uuid(),
@@ -90,15 +88,20 @@ export const fieldInFormSchema = z.object({
   updatedAt:   z.string().datetime(),
 });
 
-// Output for GET /forms/:id (creator, full detail)
+// FIX: added currentVersionId and version so the builder can show
+// which published version is live without an extra API call.
 export const formDetailOutputSchema = formOutputSchema.extend({
-  fields: z.array(fieldInFormSchema),
-  theme:  themeOutputSchema,
+  fields:           z.array(fieldInFormSchema),
+  theme:            themeOutputSchema,
+  currentVersionId: z.string().uuid().nullable().optional(),
+  version:          z.number().optional(),
 });
 
-// Output for GET /forms/public/:slug (respondent view)
+// FIX: added wrongPassword so the frontend PasswordGate can show
+// "Incorrect password" feedback vs "no password entered yet"
 export const publicFormOutputSchema = formOutputSchema.extend({
   fields:           z.array(fieldInFormSchema),
   currentVersionId: z.string().uuid().nullable(),
   requiresPassword: z.boolean().optional(),
+  wrongPassword:    z.boolean().optional(),
 });
