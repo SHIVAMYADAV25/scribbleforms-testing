@@ -22,7 +22,7 @@ export default function AnalyticsHubPage() {
 
   // ─── REAL BACKEND CONNECTION HOOKS ───
   const { data, isLoading, isError, error, refetch } = useFormList({ search: search || undefined });
-  const createForm = useCreateForm();
+  // const createForm = useCreateForm();
   const deleteForm = useDeleteForm();
   const duplicateForm = useDuplicateForm();
 
