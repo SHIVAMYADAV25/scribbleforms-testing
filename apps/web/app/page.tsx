@@ -398,7 +398,7 @@ export default function ScribbleLandingPage() {
   const [isDemoModalOpen, setIsDemoModalOpen] = useState(false);
 
   return (
-    <div style={{ position: "relative", width: "100vw", height: "100vh", backgroundColor: "#fdf6ed", overflowX: "hidden", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
+    <div className="custom-scrollbar" style={{ position: "relative", width: "100vw", height: "100vh", backgroundColor: "#fdf6ed", overflowX: "hidden", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
 
       {/* ── 2. OPEN SPACIOUS GLOBAL CONTENT LAYER ── */}
       <div style={{ position: "relative", zIndex: 1, width: "100%", height: "100%", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "15px 65px 40px 45px", boxSizing: "border-box" }}>
