@@ -358,16 +358,16 @@ const SignupPage: NextPage = () => {
 
       </div>
 
-      {showGoogleModal && (
+{showGoogleModal && (
   <div
     style={{
       position: "fixed",
       inset: 0,
-      background: "rgba(0,0,0,0.35)",
+      backgroundColor: "rgba(0,0,0,0.35)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      zIndex: 99999,
+      zIndex: 9999,
     }}
     onClick={() => setShowGoogleModal(false)}
   >
@@ -375,9 +375,9 @@ const SignupPage: NextPage = () => {
       onClick={(e) => e.stopPropagation()}
       style={{
         width: "420px",
-        background: "#fffdf7",
+        backgroundColor: "#fffdf7",
         border: "2px solid #2d2416",
-        borderRadius: "18px",
+        borderRadius: "16px",
         padding: "28px",
         boxShadow: "6px 6px 0px #2d2416",
         textAlign: "center",
@@ -386,7 +386,7 @@ const SignupPage: NextPage = () => {
     >
       <div
         style={{
-          fontSize: "46px",
+          fontSize: "48px",
           marginBottom: "10px",
         }}
       >
@@ -396,12 +396,12 @@ const SignupPage: NextPage = () => {
       <h2
         style={{
           fontFamily: "'Caveat', cursive",
-          fontSize: "34px",
-          margin: "0 0 10px 0",
+          fontSize: "32px",
+          margin: "0 0 12px 0",
           color: "#2d2416",
         }}
       >
-        Google Signup Disabled
+        Google Login Disabled
       </h2>
 
       <p
@@ -410,18 +410,41 @@ const SignupPage: NextPage = () => {
           fontSize: "15px",
           color: "#5a4a30",
           lineHeight: 1.6,
-          marginBottom: "22px",
+          marginBottom: "16px",
         }}
       >
-        The developer is not accepting Google signups right now.
+        The developer is not accepting Google logins right now.
         <br />
-        He joined another hackathon and is making questionable life choices.
+        He's probably busy fighting bugs or breaking production again.
       </p>
+
+      {/* --- Credentials Section Added Here --- */}
+      <div
+        style={{
+          fontFamily: "'Nunito', sans-serif",
+          fontSize: "14px",
+          backgroundColor: "#f4ede2",
+          border: "2px dashed #2d2416",
+          borderRadius: "8px",
+          padding: "12px",
+          marginBottom: "22px",
+          textAlign: "left",
+          color: "#2d2416",
+        }}
+      >
+        <div style={{ marginBottom: "4px" }}>
+          <strong>Email:</strong> demo@scribbleforms.dev
+        </div>
+        <div>
+          <strong>Password:</strong> Demo@1234
+        </div>
+      </div>
+      {/* ------------------------------------- */}
 
       <button
         onClick={() => setShowGoogleModal(false)}
         style={{
-          background: "#f8de7e",
+          backgroundColor: "#f8de7e",
           border: "2px solid #2d2416",
           borderRadius: "10px",
           padding: "10px 24px",
@@ -431,7 +454,7 @@ const SignupPage: NextPage = () => {
           fontWeight: 700,
         }}
       >
-        Got it ✨
+        Got it
       </button>
     </div>
   </div>
